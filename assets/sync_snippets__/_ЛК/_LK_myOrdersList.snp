@@ -1,0 +1,324 @@
+<?php
+
+$lk= 106;
+$reg= 107;
+$auth= 108;
+$payBuy = 208; 
+$topage_url= $modx->makeUrl( $modx->documentIdentifier );
+$toBuyPayPage_url = $modx->makeUrl($payBuy);
+
+if( ! $_SESSION[ 'webuserinfo' ][ 'auth' ] )
+{
+	header( 'location: '. $modx->makeUrl( $auth ) );
+	exit();
+}
+
+$webuserinfo= $_SESSION[ 'webuserinfo' ][ 'info' ];
+
+$topage= ( $topage ? intval( $topage ) : $modx->documentIdentifier );
+$topage_url= $modx->makeUrl( $topage );
+
+$vkladka_active= 1;
+if ($_GET['tab'] == 2) $vkladka_active= 2;
+if ($_GET['tab'] == 3) $vkladka_active= 3;
+if ($_GET['tab'] == 4) $vkladka_active= 4;
+if ($_GET['tab'] == 5) $vkladka_active= 5;
+
+//отмена заказа
+if (is_numeric($_GET['abortId'])) {
+	$idorder = addslashes ($_GET['abortId']);
+	
+	$newStatus = 'aborted';
+	$timestamp = time();
+	
+	$sqlAllSums = "SELECT SUM(count) AS sumcount, SUM(price) AS sumprice, SUM(id_item) AS sumiditem, SUM(id_user) AS sumiduser FROM  ".$modx->getFullTableName( '_order_items' )." WHERE id_order = '{$idorder}' ";
+	$resultSumm = mysql_query($sqlAllSums) or die ("Error: 21457".mysql_error());
+	$sumsVal = mysql_fetch_assoc($resultSumm);
+	
+	$sqlPriceShipment = "SELECT price_shipment FROM  ".$modx->getFullTableName( '_orders' )." WHERE id= '{$idorder}' ";
+	$resultPriceShipment = mysql_query($sqlPriceShipment) or die ("Error: 21457".mysql_error());
+	$sumShipment = mysql_fetch_assoc($resultPriceShipment)['price_shipment'];
+	
+	$sqlUpdateOrders = "UPDATE  ".$modx->getFullTableName( '_orders' )." SET status = '{$newStatus}' WHERE id = '{$idorder}' ";
+	$resultUpdateOrders = mysql_query($sqlUpdateOrders) or die ("Error: 234747".mysql_error());
+	
+	if ($resultUpdateOrders){
+		//$calculatedHash = md5($sumsVal['sumcount']+$sumsVal['sumprice']+$sumsVal['sumiditem']+$sumsVal['sumiduser']+$sumShipment.$newStatus);
+		$calculatedHash = ($sumsVal['sumcount'].'_'.$sumsVal['sumprice'].'_'.$sumsVal['sumiditem'].'_'.$sumsVal['sumiduser'].'_'.$sumShipment.$newStatus);
+		//пересчет хеша UPDATE ORDERS_HA
+		$sqlUpdateHash = "UPDATE  ".$modx->getFullTableName( '_orders_ha' )." SET haval = '$calculatedHash' WHERE id_order = '{$idorder}' ";
+		$resultUpdateHash = mysql_query($sqlUpdateHash) or die ("Error: 2136247".mysql_error());
+	}
+	
+}
+
+
+
+
+
+//Закрыть спор
+if (is_numeric($_GET['closeDispute'])) {
+	$idorder = addslashes ($_GET['closeDispute']);
+	
+	$newStatus = 'closed';
+	$timestamp = time();
+	
+	$sqlUpdateOrders = "UPDATE  ".$modx->getFullTableName( '_dispute_list' )." SET status = '{$newStatus}' WHERE order_id = '{$idorder}' ";
+	$resultUpdateOrders = mysql_query($sqlUpdateOrders) or die ("Error: 234747".mysql_error());
+	
+	if ($resultUpdateOrders){
+			$text = 'Покупатель закрыл спор';
+		 	$modx->runSnippet( '_SHOP_Msg_dispute', array( 'event' => 'sendNewMessage', 
+												   'text' => $text, 
+												   'from' => $webuserinfo['id'],
+												   'order'=> $idorder
+											   ));
+	}
+	
+}
+
+
+
+
+if (is_numeric($_GET['confirmShipId'])) {
+	$idorder = $_GET['confirmShipId'];
+	//$sumShipment = $_POST['calcShipVal'];
+	$newStatus = 'waitTesting';
+	$timestamp = time();
+		
+	$sqlAllSums = "SELECT SUM(count) AS sumcount, SUM(price) AS sumprice, SUM(id_item) AS sumiditem, SUM(id_user) AS sumiduser FROM  ".$modx->getFullTableName( '_order_items' )." WHERE id_order = '{$idorder}' ";
+	$resultSumm = mysql_query($sqlAllSums) or die ("Error: 21457".mysql_error());
+	$sumsVal = mysql_fetch_assoc($resultSumm);
+		
+	$sqlPriceShipment = "SELECT price_shipment FROM  ".$modx->getFullTableName( '_orders' )." WHERE id= '{$idorder}' ";
+	$resultPriceShipment = mysql_query($sqlPriceShipment) or die ("Error: 21457".mysql_error());
+	$sumShipment = mysql_fetch_assoc($resultPriceShipment)['price_shipment'];
+		
+	$sqlUpdateOrders = "UPDATE  ".$modx->getFullTableName( '_orders' )." SET w_ship = -1 , w_test = 1, date_w_test = '{$timestamp}', status = '{$newStatus}' WHERE id = '{$idorder}' ";
+	$resultUpdateOrders = mysql_query($sqlUpdateOrders) or die ("Error: 234747".mysql_error());
+
+	if ($resultUpdateOrders){
+		//$calculatedHash = md5($sumsVal['sumcount']+$sumsVal['sumprice']+$sumsVal['sumiditem']+$sumsVal['sumiduser']+$sumShipment.$newStatus);
+		$calculatedHash = ($sumsVal['sumcount'].'_'.$sumsVal['sumprice'].'_'.$sumsVal['sumiditem'].'_'.$sumsVal['sumiduser'].'_'.$sumShipment.$newStatus);
+		//пересчет хеша UPDATE ORDERS_HA
+		$sqlUpdateHash = "UPDATE  ".$modx->getFullTableName( '_orders_ha' )." SET haval = '$calculatedHash' WHERE id_order = '{$idorder}' ";
+		$resultUpdateHash = mysql_query($sqlUpdateHash) or die ("Error: 2136247".mysql_error());
+	}	
+		
+}
+
+
+
+if (is_numeric($_GET['confirmTestId'])) {
+	$idorder = $_GET['confirmTestId'];
+	//$sumShipment = $_POST['calcShipVal'];
+	$newStatus = 'waitEnd';
+	$timestamp = time();
+		
+	$sqlAllSums = "SELECT SUM(count) AS sumcount, SUM(price) AS sumprice, SUM(id_item) AS sumiditem, SUM(id_user) AS sumiduser FROM  ".$modx->getFullTableName( '_order_items' )." WHERE id_order = '{$idorder}' ";
+	$resultSumm = mysql_query($sqlAllSums) or die ("Error: 21457".mysql_error());
+	$sumsVal = mysql_fetch_assoc($resultSumm);
+		
+	$sqlPriceShipment = "SELECT price_shipment FROM  ".$modx->getFullTableName( '_orders' )." WHERE id= '{$idorder}' ";
+	$resultPriceShipment = mysql_query($sqlPriceShipment) or die ("Error: 21457".mysql_error());
+	$sumShipment = mysql_fetch_assoc($resultPriceShipment)['price_shipment'];
+		
+	$sqlUpdateOrders = "UPDATE  ".$modx->getFullTableName( '_orders' )." SET w_test = -1 , date_end = '{$timestamp}', status = '{$newStatus}' WHERE id = '{$idorder}' ";
+	$resultUpdateOrders = mysql_query($sqlUpdateOrders) or die ("Error: 234747".mysql_error());
+
+	if ($resultUpdateOrders){
+		//$calculatedHash = md5($sumsVal['sumcount']+$sumsVal['sumprice']+$sumsVal['sumiditem']+$sumsVal['sumiduser']+$sumShipment.$newStatus);
+		$calculatedHash = ($sumsVal['sumcount'].'_'.$sumsVal['sumprice'].'_'.$sumsVal['sumiditem'].'_'.$sumsVal['sumiduser'].'_'.$sumShipment.$newStatus);
+		//пересчет хеша UPDATE ORDERS_HA
+		$sqlUpdateHash = "UPDATE  ".$modx->getFullTableName( '_orders_ha' )." SET haval = '$calculatedHash' WHERE id_order = '{$idorder}' ";
+		$resultUpdateHash = mysql_query($sqlUpdateHash) or die ("Error: 2136247".mysql_error());
+	}	
+		
+}
+
+
+$allCountMsg = $modx->runSnippet( '_SHOP_Msg_dispute', array( 'event' => 'getCountMsgFromWriter',   'to' => $webuserinfo['id'] ));
+
+
+?>
+
+
+<div class="vkladki_butts">
+	<div class="vkldk_butt <?= ( $vkladka_active == 1 ? 'active' : '' ) ?>" data-id="1">В пути <?=$modx->runSnippet( '_LK_getCountEvent', array('event' => 'inShip'))?></div>
+	<div class="vkldk_butt <?= ( $vkladka_active == 2 ? 'active' : '' ) ?>" data-id="2">Завершенные <?=$modx->runSnippet( '_LK_getCountEvent', array('event' => 'ended'))?></div>
+	<div class="vkldk_butt <?= ( $vkladka_active == 3 ? 'active' : '' ) ?>" data-id="3">Ожидают оплаты <?=$modx->runSnippet( '_LK_getCountEvent', array('event' => 'waitPayment'))?></div>
+	<div class="vkldk_butt <?= ( $vkladka_active == 4 ? 'active' : '' ) ?>" data-id="4">На согласлвании <?=$modx->runSnippet( '_LK_getCountEvent', array('event' => 'calcShipment'))?></div>
+	<div class="vkldk_butt <?= ( $vkladka_active == 5 ? 'active' : '' ) ?>" data-id="5">Споры <?=$modx->runSnippet( '_LK_getCountEvent', array('event' => 'disputeOp'))?></div>
+	<div class="clr">&nbsp;</div>
+</div>
+
+
+
+<div class="vkladki_divs">
+	<!--=========================================TAB1 START //в пути===============================================================-->
+<?php
+	
+$okPageBufferTab1 = false;	
+if ($_GET['event'] == 'ok' && is_numeric($_GET['payId'])) {
+	
+	$payId  = $_GET['payId'];
+	$sql = "SELECT ABS(event) AS event FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user = ".$webuserinfo['id']." AND shop_id = ".$payId." LIMIT 1";
+	$resLastPay = mysql_query($sql) or die('ERR 54478 ' . mysql_error() );
+	$lastPayVal = mysql_fetch_row($resLastPay)['event'];
+	
+	
+	
+		//select summ wait output
+	$sqlSummOutput = "SELECT SUM(sum) FROM  ".$modx->getFullTableName( '_points_up' )." WHERE id_user =  '".$webuserinfo['id']."' AND type = 'output'  AND status = 'wait' LIMIT 1";
+	$resultSummOutput = mysql_query($sqlSummOutput) or die ('Error SUMMPrep coins history');
+	$coinsSummOutputInt = mysql_fetch_row($resultSummOutput)[0];
+
+	
+	$sqlSumm = "SELECT SUM(event) FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' LIMIT 1";
+	$resultSumm = mysql_query($sqlSumm) or die ('Error SUMM coins history');
+	$coinsSumm = mysql_fetch_row($resultSumm)[0] - $coinsSummOutputInt;
+	
+	
+	
+	//оплаченный аванс
+	$sqlSummPrepayPay = "SELECT SUM(ABS(event)) FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' AND type = 'prepaymentPAY' AND event < 0 LIMIT 1";
+	$resultSummPrepayPay = mysql_query($sqlSummPrepayPay) or die ('Error в качестве аванса');
+	$coinsSummPrepayPay = mysql_fetch_row($resultSummPrepayPay)[0];
+	
+	//ДЕНЬГИ ЗА ПРОДАЖИ КОТОРЫЕ НА ТЕК. МОМЕНТ В ДОСТАВКЕ
+	$sqlSummNotConfirm = "SELECT SUM(event) FROM  ".$modx->getFullTableName( '_coins_history' )." AS hist
+						LEFT JOIN ".$modx->getFullTableName( '_orders' )." AS ord ON ord.id = hist.shop_id
+						WHERE hist.id_user =  '".$webuserinfo['id']."'   
+						AND (ord.status <>  'ended'OR hist.key = -1)
+						AND hist.shop_id >0
+						AND hist.type =  'payUp'
+						LIMIT 1";
+	$resultNotConfirm = mysql_query($sqlSummNotConfirm) or die ('Error 634437 SUMMPrep coins history');
+	$resultNotConfirmInt = mysql_fetch_row($resultNotConfirm)[0];
+
+	
+	
+	
+	$rowsItem = $modx->runSnippet( '_SHOP_actionBasket', array( 'type' => 'getMyOrdersItemsList', 'idorder' => $payId));
+	$allsumOrder = 0;
+	if ($rowsItem){
+		foreach ($rowsItem as $rowItem) {
+			$allsumOrder = $allsumOrder + $rowItem['price'] * $rowItem['count'];
+		}
+	} 
+
+	$sqlSumShipment = "SELECT price_shipment FROM  ".$modx->getFullTableName( '_orders' )." WHERE id = ".$payId;
+	$resultSumShipment = mysql_query($sqlSumShipment) or die ("Error: 2352".mysql_error());
+	$sumShipment = mysql_fetch_assoc($resultSumShipment)['price_shipment'];
+	
+	
+	//==============================================
+	$allsumOrder = $allsumOrder + $sumShipment;	
+	//==============================================
+	$allsumOrder = ceil($allsumOrder + $allsumOrder / 100 * 18);
+	
+	
+	$okPageBufferTab1 = 'Ваш заказ оплачен внутренними баллами сайта.<br/>Сумма Вашего заказа ('.$allsumOrder.' руб.) вычтена из внутреннего счета.<br/>
+						Доступно средсв '. $modx->runSnippet( 'Price', array( 'price' => $coinsSumm - $resultNotConfirmInt +$coinsSummPrepayPay, 'round' => 0 ) ) ;
+}	
+
+
+
+$listOrdersWait = $modx->runSnippet( '_LK_myOrdersHistoryList', array('list' => 'wait_shipment'));
+?>
+	<div class="vkldk_div vkldk_div_1 <?= ( $vkladka_active == 1 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">
+			<div class="_LK_form">	
+				<?= ($okPageBufferTab1 ? '<div class="_LK_ok">'.$okPageBufferTab1.'</div>' : '') ?>
+			</div>
+			<?=$listOrdersWait?>
+		</div>
+		<div class="clr"></div>
+	</div>
+	<div class="clr"></div>
+	<!--=========================================TAB1 END //в пути===============================================================-->
+	
+	
+	
+	
+	<!--=========================================TAB2 START //Завершенные===============================================================-->
+<?php
+$listOrdersWait = $modx->runSnippet( '_LK_myOrdersHistoryList', array('list' => 'wait_testing'));
+?>
+	<div class="vkldk_div vkldk_div_2 <?= ( $vkladka_active == 2 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">	
+			<?=$listOrdersWait?>
+		</div>
+		<div class="clr"></div>
+	</div>
+	<div class="clr"></div>
+	<!--=========================================TAB2 END //Завершенные===============================================================-->
+	
+	
+	
+	<!--=========================================TAB3 START //Ожидают оплаты===============================================================-->
+<?php
+$listOrdersWait = $modx->runSnippet( '_LK_myOrdersHistoryList', array('list' => 'wait_coins'));
+?>
+	<div class="vkldk_div vkldk_div_3 <?= ( $vkladka_active == 3 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">	
+			<?=$listOrdersWait?>
+		</div>
+		<div class="clr"></div>
+	</div>
+	<div class="clr"></div>
+	<!--=========================================TAB3 END //Ожидают оплаты===============================================================-->
+	
+	
+	
+	
+	<!--=========================================TAB4 START //На согласлвании===============================================================-->
+	
+<?php
+$okPageBuffer = false;	
+if ($_GET['event'] == 'ok' && is_numeric($_GET['inid'])) {
+	$okPageBuffer = 'Ваш заказ на согласовании. Администратор уточнит наличие и стоимость доставки, затем свяжется с Вами для проведения оплаты';
+}	
+$listOrdersWait = $modx->runSnippet( '_LK_myOrdersHistoryList', array('list' => 'wait_check'));
+
+
+
+?>
+	<div class="vkldk_div vkldk_div_4 <?= ( $vkladka_active == 4 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">	
+			<div class="_LK_form">	
+				<?= ($okPageBuffer ? '<div class="_LK_ok">'.$okPageBuffer.'</div>' : '') ?>
+			</div>
+			<?=$listOrdersWait?>
+			
+		</div>
+		<div class="clr"></div>
+	</div>
+	<div class="clr"></div>
+	<!--=========================================TAB4 END //На согласлвании===============================================================-->	
+	
+	
+	
+	
+	
+	
+		<!--=========================================TAB3 START //Ожидают оплаты===============================================================-->
+<?php
+$listOrdersOpenedDispute = $modx->runSnippet( '_LK_myOrdersOpenedDispute');
+///operateDispute
+?>
+	
+	
+	<div class="vkldk_div vkldk_div_5 <?= ( $vkladka_active == 5 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">	
+			<?=$listOrdersOpenedDispute?>
+		</div>
+		<div class="clr"></div>
+	</div>
+	<div class="clr"></div>
+	<!--=========================================TAB3 END //Ожидают оплаты===============================================================-->
+	
+</div>
+<div class="clr"></div>
+
+?>

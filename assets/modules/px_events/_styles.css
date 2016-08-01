@@ -1,0 +1,99 @@
+
+
+@font-face {
+	font-family: 'OpenSans';
+	src: url('../px_events/_fonts/OpenSansL.otf');
+	src: url('../px_events/_fonts/OpenSansL.eot');
+	src: url('../px_events/_fonts/OpenSansL.ttf') format('truetype');
+	src: url('../px_events/_fonts/OpenSansL.eot?#iefix') format('embedded-opentype'),
+		url('../px_events/_fonts/OpenSansL.woff') format('woff'),
+		url('../px_events/_fonts/OpenSansL.ttf') format('truetype'),
+		url('../px_events/_fonts/OpenSansL.svg#OpenSansL') format('svg');
+	font-weight: 100;
+	font-style: normal;
+}
+
+
+
+
+
+*{
+box-sizing: inherit;
+margin:0;
+padding:0;
+} 
+
+table {
+    
+        margin: 30px;
+}
+
+
+
+.panelBlock{
+    width: 280px;
+    height: 290px;
+    border: 1px solid #ccc;
+    margin: 5px;
+    box-shadow: 0 1px 2px rgba(10,10,20,.1);
+    font-family: 'OpenSans' , arial, sans-serif;
+    position: relative;
+        
+}
+
+.panelBlock .panelBlock_tit{
+    font-size: 18px;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 20px;
+    margin-bottom: 20px;
+    background-color: #a1afb8;
+    color: #fff;
+    font-family: 'OpenSans' , arial, sans-serif;
+    text-shadow: 0 1px 2px rgba(10,10,30,.3);
+        
+}
+
+
+.panelBlock .panelBlock_str{
+    font-size: 13px;
+    margin: 10px 15px 5px 15px;
+    color: #226397;
+    text-shadow: 0 1px 1px rgba(10,10,30,.1);
+    border-bottom: 1px dashed #ccc;
+        
+}
+
+
+.panelBlock .panelBlock_str .numb{
+    background-color: #eee;
+    padding: 0 7px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 11px;
+    display: block;
+    float: right;
+        
+}
+
+
+.panelBlock .panelBlock_str .numb.notice{
+    background-color: #2ca5ff;
+    color: #fff;
+        
+}
+
+
+
+.panelBlock .panelBlock_updated {
+    position: absolute;
+    text-align: center;
+    font-size: 11px;
+    bottom: 0;
+    width: 100%;
+    text-shadow: 0 1px 2px rgba(10,10,12,.1);
+}
+
+.panelBlock .panelBlock_updated .numb_upd {
+      font-size: 12px;
+}

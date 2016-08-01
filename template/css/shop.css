@@ -1,0 +1,483 @@
+.cartWrapper {
+    float: right;
+}
+
+
+
+.cartWrapper .myCart {
+	cursor:pointer;
+	background-image: url("/template/images/cart.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right;
+    width: 150px;
+    height: 30px;
+    float: right;
+    text-align: right;
+    color: #777;
+    font-size: 12px;
+    margin-top: 5px;
+    padding-right: 35px;
+}
+
+.catalog_table tr.lasttrgray {
+	background-color: #eee;
+    height: 50px;
+}
+
+
+.catalog_table tr.lasttrgray .allSummMyOrder {
+	padding-left: 20px;
+    font-size: 18px;
+}
+
+.catalog_table tr.lasttrgray .tr_itogo {
+	text-align: right;
+}
+
+
+    
+.linkDooOrder {	
+    clear: both;
+    border: none;
+	float: right;
+    width: 170px;
+    margin: 10px;
+    display: block;
+    padding: 5px 15px 4px;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+    background: #e02b2b;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 4px solid #B50000;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    text-decoration: none;
+    transition-property: all;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+    transition-delay: 0.0s;
+}
+
+.linkDooOrder:hover {
+    color: #fff;
+    text-decoration: none;
+    background-color: #F33131;
+}
+
+
+
+.catalog_table .jqt_row_tit .jqtrt_col_order {
+	font-weight: 100;
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px solid #e5e5e5
+
+}
+
+.catalog_table td {
+	padding:3px 7px;
+	font-size: 12px;
+}
+
+.catalog_table .order_code {
+	width:120px;
+}
+
+.catalog_table .order_manuf {
+	width:140px;
+}
+
+.catalog_table .order_title {
+
+}
+
+.catalog_table .order_price {
+	width:150px;
+}
+
+.catalog_table .order_count {
+	width:100px;
+	text-align: center;
+}
+
+.catalog_table .order_summ {
+	width:200px;
+	text-align: right;
+}
+
+
+
+.order_shipment, .order_payment, .order_notice {
+	width: 520px;
+    border: 1px dashed #ccc;
+    float: right;
+    margin-top: 20px;
+    height: 200px;
+}
+
+
+.order_contactFace {
+	width: 550px;
+    min-height: 300px;
+    border: 1px dashed #ccc;
+    margin-top: 20px;
+    float: left;
+    height: 644px;
+
+}
+
+
+
+.orederBlockTitle{
+	font-weight: 100;
+    background: #f9f9f9;
+    margin-bottom: 40px;
+    padding-left: 20px;
+    height: 30px;
+    font-size: 25px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+
+
+.orederBlockform {
+	padding: 0 20px;
+    margin-bottom: 40px;
+}
+
+
+.orederBlockform label {
+    display: inline-block;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    text-align: right;
+}
+
+.orederBlockform label.longlabel {
+    display: inline-block;
+    width: 200px;
+    height: 60px;
+    line-height: 18px;
+    text-align: right;
+}
+
+.orederBlockform input {
+    height: 20px;
+    margin: 10px 0 10px 20px;
+    width: 230px;
+}
+
+.orederBlockform textarea {
+    margin: 10px 0px 10px 22px;
+    height: 60px;
+    width: 233px;
+    resize: none;
+}
+
+
+
+.order_shipment input, .order_payment input, .order_notice input {
+	margin: 0 0 15px 30px;
+}
+
+.order_notice .notice{
+	color: #757575;
+    padding: 20px;
+    font-size: 11px;
+}
+
+
+.errorBlocks {
+	border: 2px solid red;
+    margin: 20px;
+    padding: 20px;
+}
+
+.errorBlocks .title {
+	margin-bottom: 15px;
+}
+
+   
+
+.errorBlocks span {
+	color: #e00;
+    display: block;
+    margin-left: 10px;
+}
+
+
+
+.lkItem_tit {
+	height: 50px;
+    line-height: 50px;
+    font-weight: 100;
+    border-bottom: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.lkItem_tit > div {
+	float:left;
+}
+
+.lkItem_tit .order_number_tit ,.lkItem .order_number   {
+	width: 90px;
+    padding-left: 10px;
+}
+
+.lkItem_tit .date_w_tit ,.lkItem .date_w {
+	width:150px;
+}
+
+.lkItem .date_w {
+	margin-left: 4px;
+}
+
+
+.lkItem_tit .summOneOrder_tit  ,.lkItem .summOneOrder {
+	width:120px;
+}
+.lkItem_tit .status_tit , .lkItem .status  {
+	width:140px;
+}
+.lkItem_tit .action_tit  {
+	width:50px;
+}
+
+
+.lkItem .more  {
+	float: right;
+	width:26px;
+}
+
+.lkItem .action a {
+    border: none;
+    display: block;
+    margin-right: 3px;
+    float: left;
+    margin-top: 9px;
+    padding: 3px 3px 3px;
+    text-align: center;
+    font-size: 10px;
+    cursor: pointer;
+    background: #C5C5C5;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 4px solid #A2A2A2;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    text-decoration: none;
+    transition-property: all;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+    transition-delay: 0.0s;
+}
+
+.lkItem .action a.yellowButton:hover {
+	background: #FFA500;
+	border-bottom: 4px solid #EC7800;
+}
+
+.lkItem .action a.blueButton:hover {
+	background: #00ACED;
+	border-bottom: 4px solid #0594CA;
+}
+
+.lkItem .action a.greenButton:hover {
+	background: #4BCC66;
+	border-bottom: 4px solid #37A24D;
+}
+
+
+.lkItem .action a.redButton:hover {
+	background: #e02b2b;
+	border-bottom: 4px solid #B50000;
+}
+
+
+
+.itemOrderList a {
+	font-size:12px;
+}
+
+
+
+.itemListPopup  .itemOrderList_tit {
+	height: 30px;
+    background: #e0e0e0;
+}
+
+.itemListPopup  .itemOrderList_tit div {
+	float:left;
+	padding: 0 5px;
+    box-sizing: content-box;
+}
+
+
+
+.left  .itemOrderList_tit {
+	height: 30px;
+    background: #e0e0e0;
+}
+
+.left  .itemOrderList_tit div {
+	float:left;
+	padding: 0 5px;
+    box-sizing: content-box;
+}
+
+
+
+
+
+
+
+.itemListPopup  .itemOrderList_tit .seeMoreInfo_code {
+	width:50px;
+}
+
+.itemListPopup  .itemOrderList_tit .seeMoreInfo_name {
+	width:140px;
+}
+
+
+.itemListPopup  .itemOrderList_tit .seeMoreInfo_price {
+	width:80px;
+}
+
+
+.itemListPopup  .itemOrderList_tit .seeMoreInfo_count {
+	width:50px;
+}
+
+
+.itemListPopup  .itemOrderList_tit .seeMoreInfo_summ {
+	width: 120px;
+    text-align: center;
+}
+
+
+
+
+
+.left  .itemOrderList_tit .seeMoreInfo_code {
+	width:50px;
+}
+
+.left  .itemOrderList_tit .seeMoreInfo_name {
+	width:140px;
+}
+
+
+.left  .itemOrderList_tit .seeMoreInfo_price {
+	width:80px;
+}
+
+
+.left  .itemOrderList_tit .seeMoreInfo_count {
+	width:50px;
+}
+
+
+.left  .itemOrderList_tit .seeMoreInfo_summ {
+	width: 120px;
+    text-align: center;
+}
+
+
+
+
+.itemOrderList {
+	width: 490px;
+    height: 25px;
+}
+
+
+.seeMoreInfo .left .itemOrderList a, .seeMoreInfo .left .itemOrderList span{
+	display: block;
+    float: left;
+    height: 25px;
+    line-height: 25px;
+}
+
+
+
+.seeMoreInfo .left .itemOrderList span .rubl {
+}
+
+
+.seeMoreInfo .left .itemOrderList a {
+	width:60px;
+	margin-left:5px;
+}
+
+
+.seeMoreInfo .left .itemOrderList span.title  {
+	width: 150px;
+}
+
+
+.seeMoreInfo .left .itemOrderList span.price  {
+	width: 90px;
+}
+
+
+.seeMoreInfo .left .itemOrderList span.count  {
+	width: 100px;
+}
+
+
+.seeMoreInfo .left .itemOrderList span.summOnePosition  {
+	width: 85px;
+}
+
+
+.brayBG {
+    background-color: #eee;
+    height: 20px;
+    line-height: 16px;
+    
+}
+
+
+.itemOrderList span.as1 {
+    width: 60px;
+    margin-left: 5px;
+    
+}
+
+
+.brayBG > div.itogoTEXT , .brayBG > div.itogoPrice   {
+    float: left;
+    
+}
+
+
+
+.brayBG .miniRubl {
+    color: #111 !important;
+    float: right !important;
+    line-height: 20px !important;
+    height: 20px !important;
+}
+
+.brayBG > div.itogoTEXT    {
+    width: 400px; 
+    text-align: right;
+}
+
+
+.brayBG > div.itogoPrice   {
+    text-align: left;
+    font-weight: 600;
+    padding-left: 10px;
+}

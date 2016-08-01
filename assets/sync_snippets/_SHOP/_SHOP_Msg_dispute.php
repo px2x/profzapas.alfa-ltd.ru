@@ -1,0 +1,250 @@
+<?php
+
+$lk= 106;
+$reg= 107; 
+$auth= 108;
+
+$currentPage = $modx->documentIdentifier;
+
+if($_SESSION['mgrShortname'] == 'admin' || $_SESSION['mgrShortname'] == 'manager') {
+	
+}else {
+	
+	if( ! $_SESSION[ 'webuserinfo' ][ 'auth' ]  )
+	{
+		if ($currentPage != $auth) {
+			header( 'location: '. $modx->makeUrl( $auth ) );
+			exit();
+		}else return false;
+		
+	}
+	
+	$webuserinfo= $_SESSION[ 'webuserinfo' ][ 'info' ];
+	$topage= ( $topage ? intval( $topage ) : $modx->documentIdentifier );
+	$topage_url= $modx->makeUrl( $topage );
+}
+
+
+
+
+
+
+
+
+
+
+//getCountMsgFromWriter/
+if ($event == 'getCountMsgFromWriter' && is_numeric($to)) {
+	$sql = "SELECT COUNT( id ) 
+			FROM  ".$modx->getFullTableName( '_dispute_msg' )." 
+			WHERE  `to_user` ={$to}
+			AND readstatus = 'unred' ";
+	$result = mysql_query($sql);
+	if ($result){
+		if  ($row = mysql_fetch_row($result)[0]){
+			return $row;
+		}else return false;	
+	}else return false;
+
+}
+
+
+
+
+
+//sendNewMessage/
+if ($event == 'sendNewMessage' && $text != '' && is_numeric($from) && is_numeric($order)) {
+	$timestamp = time();
+	
+	$sql = "SELECT `timestamp` FROM ".$modx->getFullTableName( '_dispute_msg' )." 
+			WHERE `to_user` = -1 AND `message` = '{$text}' LIMIT 1";
+	$result = mysql_query($sql) or die ("ERR 5645 ".mysql_error());
+	if (mysql_num_rows($result) > 0){
+		return false;		
+	}
+	
+	$err = false;
+	$sql = "SELECT `id` FROM ".$modx->getFullTableName( '_dispute_list' )." 
+			WHERE `order_id` = '{$order}' LIMIT 1";
+	$result = mysql_query($sql) or die ("ERR 456346 ".mysql_error());
+	if (mysql_num_rows($result) > 0){
+		if ($dispute_id = mysql_fetch_assoc($result)['id']){
+			$err = true;
+		}	
+	}
+	
+	if ($err) {
+		$sql = "INSERT INTO  ".$modx->getFullTableName( '_dispute_msg' )." (
+				`id_dispute`,
+				`from_user`,
+				`to_user`,
+				`message`,
+				`timestamp`,
+				`readstatus`
+				) VALUES (
+				".$dispute_id.",
+				".$from.",
+				-1,
+				'".$text."',
+				'".$timestamp."',
+				'unred'
+				)";
+
+
+		$result = mysql_query($sql) or die ("ERR 7568 ".mysql_error());
+		if ($result){
+			return true;	
+		}else return false;
+	}
+	
+}
+
+
+
+
+//sendNewMessage/
+if ($event == 'sendNewMessageFromAdmin' && $text != '' && is_numeric($to) && is_numeric($order)) {
+	$timestamp = time();
+	
+    
+	$sql = "SELECT `timestamp` FROM ".$modx->getFullTableName( '_dispute_msg' )." 
+			WHERE `to_user` = '{$to}' AND `message` = '{$text}' LIMIT 1";
+	$result = mysql_query($sql) or die ("ERR 534 ".mysql_error());
+	if (mysql_num_rows($result) > 0){
+		//return false;		
+	}
+	
+    
+	$err = false;
+	$sql = "SELECT `id` FROM ".$modx->getFullTableName( '_dispute_list' )." 
+			WHERE `order_id` = '{$order}' LIMIT 1";
+	$result = mysql_query($sql) or die ("ERR 456346 ".mysql_error());
+	if (mysql_num_rows($result) > 0){
+		if ($dispute_id = mysql_fetch_assoc($result)['id']){
+			$err = true;
+		}	
+	}
+	
+	if ($err) {
+		$sql = "INSERT INTO  ".$modx->getFullTableName( '_dispute_msg' )." (
+				`id_dispute`,
+				`from_user`, 
+				`to_user`,
+				`message`,
+				`timestamp`,
+				`readstatus`
+				) VALUES (
+				".$dispute_id.", 
+                -1,
+				".$to.",
+				'".$text."',
+				'".$timestamp."',
+				'unred' 
+				)";
+
+
+		$result = mysql_query($sql) or die ("ERR 4567 ".mysql_error());
+		if ($result){
+			return true;	
+		}else return false;
+	}
+	
+}
+
+
+//getMsgFrom
+if ($event == 'getMsgFrom' && is_numeric($to)  && is_numeric($order) ) {
+	
+		
+	$err = false;
+	$sql = "SELECT `id` FROM ".$modx->getFullTableName( '_dispute_list' )." 
+			WHERE `order_id` = '{$order}' LIMIT 1";
+	$result = mysql_query($sql) or die ("ERR 456346 ".mysql_error());
+	if (mysql_num_rows($result) > 0){
+		if ($dispute_id = mysql_fetch_assoc($result)['id']){
+			$err = true;
+		}	
+	}
+	if ($err){
+		$sql = "SELECT * FROM ".$modx->getFullTableName( '_dispute_msg' )." 
+				WHERE ((`to_user` = {$to}  AND `from_user` = -1)
+				OR (`to_user` = -1  AND `from_user` = {$to})) AND id_dispute = {$dispute_id}
+				ORDER by id DESC
+				LIMIT 200 ";
+		$result = mysql_query($sql) or die("ERR 728926 ".mysql_error());
+		if ($result && mysql_num_rows($result) > 0 ){
+			$row = [];
+			while ($tmp = mysql_fetch_assoc($result)){
+				$row[] = $tmp;
+			}
+			if (count($row) > 0) {
+				return $row;
+			}else  {
+				return false;
+			}
+
+		}else return false;
+	
+	}
+
+
+}
+
+
+if ($event == 'getMsgFromAlltoAdm' && is_numeric($from)  && is_numeric($order) ) {
+	
+    
+    
+	$err = false;
+	$sql = "SELECT `id` FROM ".$modx->getFullTableName( '_dispute_list' )." 
+			WHERE `order_id` = '{$order}' LIMIT 1";
+	$result = mysql_query($sql) or die ("ERR 456346 ".mysql_error());
+	if (mysql_num_rows($result) > 0){
+		if ($dispute_id = mysql_fetch_assoc($result)['id']){
+			$err = true;
+		}	
+	}
+    //return '11';
+	if ($err){
+		$sql = "SELECT * FROM ".$modx->getFullTableName( '_dispute_msg' )." 
+				WHERE ((`to_user` = {$from}  AND `from_user` = -1)
+				OR (`to_user` = -1  AND `from_user` = {$from})) AND id_dispute = {$dispute_id}
+				ORDER by id DESC
+				LIMIT 200 ";
+		$result = mysql_query($sql) or die("ERR 5345345 ".mysql_error());
+		if ($result && mysql_num_rows($result) > 0 ){
+			$row = [];
+			while ($tmp = mysql_fetch_assoc($result)){
+				$row[] = $tmp;
+			}
+			if (count($row) > 0) {
+				return $row;
+			}else  {
+				return false;
+			}
+
+		}else return false;
+	
+	}
+
+
+}
+
+
+//setMsgReadStatus/
+if ($event == 'setMsgReadStatus' && is_numeric($to)) {
+	$sql = "UPDATE ".$modx->getFullTableName( '_messages' )." 
+			SET `readstatus` = -1
+			WHERE `to` = {$to}  AND `from` = -1 ";
+	$result = mysql_query($sql);
+	if ($result){
+		return true;
+	}else return false;
+
+}
+
+
+
+
+
+?>

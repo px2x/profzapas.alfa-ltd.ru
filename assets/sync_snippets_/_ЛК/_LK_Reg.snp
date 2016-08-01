@@ -1,0 +1,287 @@
+<?php
+
+//v05
+//==================================================================================
+$lk= 106;
+$reg= 107;
+$auth= 108;
+$restorepassword= 109;
+$agreed= 110;
+$DMTCaptcha= 111;
+$DMTCaptcha_img= 112;
+//==================================================================================
+
+$sc_site= 'profzapas.ru';
+$mailto= 'korneva.ola@gmail.com';
+$mailto_bcc= false;
+$mailto= 'sergey.it7@gmail.com';
+$mailfrom= 'profzapas-noreply@yandex.ru';
+$mailtype= 'smtp';
+$mailpassw= 'm_y642onB5pr';
+//Любимый киногерой: mWdqjMJ28geu_lSJZ7_0
+$smtp= 'smtp.yandex.ru';
+$smtpport= 465;
+include_once( MODX_MANAGER_PATH .'includes/controls/class.phpmailer.php' );
+//SNIPPET _LK_Restore_Password, SNIPPET _LK_Reg
+//===============================================================================
+//===============================================================================
+
+$topage= ( $topage ? intval( $topage ) : $modx->documentIdentifier );
+$topage_url= $modx->makeUrl( $topage );
+
+if( $_SESSION[ 'webuserinfo' ][ 'auth' ] )
+{
+	header( 'location: '. $modx->makeUrl( $lk ) );
+	exit();
+}
+
+// =======================================================================================================
+
+
+if( isset( $_POST[ 'reg_reg' ] ) && ! $_SESSION[ 'webuserinfo' ][ 'auth' ] )
+{
+	$reg_email= addslashes( trim( $_POST[ 'reg_email' ] ) );
+	$reg_mobile= addslashes( trim( $_POST[ 'reg_mobile' ] ) );
+	$reg_agreed= ( $_POST[ 'reg_agreed' ] == 'y' ? 'y' : 'n' );
+	
+	if( $_POST[ 'reg_captcha' ] != $_SESSION[ 'DMTCaptcha' ] )
+	{
+		$reg_err .= '<p>- Введено неверное число с картинки</p>';
+		$reg_err_flag[ 'reg_captcha' ]= true;
+		
+	}else{
+		if( $reg_agreed != 'y' )
+		{
+			$reg_err .= '<p>- Необходимо принять <a class="as1" target="_blank" href="[~'. $agreed .'~]">условия пользовательского соглашения</a></p>';
+		}
+		if( ! preg_match( "/^[a-z0-9-_\.]{1,}@[a-z0-9-\.]{1,}\.[a-z]{2,10}$/i", $reg_email ) )
+		{
+			$reg_err .= '<p>- Адрес электронной почты неверного формата</p>';
+			$reg_err_flag[ 'reg_email' ]= true;
+		}
+		if( ! preg_match( "/^\+7 [0-9]{3} [0-9]{3}-[0-9]{4}$/i", $reg_mobile ) )
+		{
+			$reg_err .= '<p>- Номер мобильного телефона неверного формата</p>';
+			$reg_err_flag[ 'reg_mobile' ]= true;
+		}
+	}
+	if( empty( $reg_err ) )
+	{
+		$rr= mysql_query( "SELECT * FROM ".$modx->getFullTableName( '_user' )." WHERE email='{$reg_email}' LIMIT 1" );
+		if( $rr && mysql_num_rows( $rr ) == 1 )
+		{
+			$reg_err .= '<p>- Этот Адрес электронной почты уже зарегистрирован</p>';
+			$reg_err_flag[ 'reg_email' ]= true;
+		}
+		
+		$rr= mysql_query( "SELECT * FROM ".$modx->getFullTableName( '_user' )." WHERE mobile='{$reg_mobile}' LIMIT 1" );
+		if( $rr && mysql_num_rows( $rr ) == 1 )
+		{
+			$reg_err .= '<p>- Этот Номер мобильного телефона уже зарегистрирован</p>';
+			$reg_err_flag[ 'reg_mobile' ]= true;
+		}
+		
+		if( ! $reg_err )
+		{
+			$password_new= $modx->runSnippet( 'GenerPassword' );
+			$password_new_md5= md5( $password_new );
+			
+			$rrr= mysql_query( "INSERT INTO ".$modx->getFullTableName( '_user' )." SET email='{$reg_email}', mobile='{$reg_mobile}', password='{$password_new_md5}', dt='".time()."'" );
+			if( $rrr )
+			{
+				$subject= "Регистрация на сайте www.". $sc_site;
+				
+				$emailtext= '<html>
+			<head>
+				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+				<title>'. $subject .'</title>
+			</head>
+			<body>
+				<h2>'. $subject .'</h2>
+				<p>Логин: '. $reg_email .'</p>
+				<p>Пароль: <b>'. $password_new .'</b></p>
+			</body>
+		</html>';
+			
+// ============================================================================
+					if( $mailtype == 'smtp' || $mailtype == 'mail' )
+					{
+						$phpmailer= new PHPMailer();
+						if( false )
+						{
+							$phpmailer->SMTPDebug= 2;
+							$phpmailer->Debugoutput = 'html';
+						}
+						if( $mailtype == 'smtp' )
+						{
+							$phpmailer->isSMTP();
+							$phpmailer->Host= $smtp;
+							$phpmailer->Port= $smtpport;
+							$phpmailer->SMTPAuth= true;
+							$phpmailer->SMTPSecure= 'ssl';
+							$phpmailer->Username= $mailfrom;
+							$phpmailer->Password= $mailpassw;
+						}
+						$phpmailer->CharSet= 'utf-8';
+						$phpmailer->From= $mailfrom;
+						$phpmailer->FromName= "";
+						if( $mailto_bcc ) $phpmailer->addBCC( $mailto_bcc );
+						$phpmailer->isHTML( true );
+						$phpmailer->Subject= $subject;
+						$phpmailer->Body= $emailtext;
+						$phpmailer->addAddress( $reg_email );
+						$phpmailer->send();
+					}else{
+						$mailto= "<". $reg_email .">";
+						$headers= "Content-type: text/html; charset=utf-8\n";
+						$headers .= "From: <". $mailfrom .">\n";
+						mail( $mailto, $subject, $emailtext, $headers );
+					}
+// ============================================================================
+			
+				header( 'location: '. $topage_url .'?ok' );
+				exit();
+				
+			}else{
+				$reg_err .= '<p>- Ошибка базы данных (002)</p>';
+			}
+		}
+	}
+}
+
+?>
+<div class="_LK_wrapper">
+	<div class="_LK_form _LK_form_reg _LK_form_left">
+		<div class="_LK_form_tit">Регистрация</div>
+		
+		<?php if( isset( $_GET[ 'ok' ] ) ){ ?>
+		<div class="_LK_ok">
+			<p><b>Вы успешно зарегистрированы на сайте!</b></p>
+			<p>На указанные адрес электронной почты и номер мобильного телефона высланы данные доступа к личному кабинету.</p>
+			<p>Если в течение 10 минут они не придут,<br />воспользуйтесь <a class="as1" href="[~<?= $restorepassword ?>~]">этой формой</a>.</p>
+		</div>
+		<?php }else{ ?>
+		<?php if( ! empty( $reg_err ) ) print '<div class="_LK_error">'. $reg_err .'</div>'; ?>
+		
+		<form action="<?= $topage_url ?>" method="post">
+			<div class="_LK_form_line">
+				<div class="_LK_form_lbl">Адрес электронной почты</div>
+				<div class="_LK_form_inp <?= ( $reg_err_flag[ 'reg_email' ] ? '_LK_form_inp_error' : '' ) ?>"><input type="text" name="reg_email" value="<?= $reg_email ?>" /></div>
+				<div class="clr">&nbsp;</div>
+			</div>
+			
+			<div class="_LK_form_line _LK_form_line_br">
+				<div class="_LK_form_lbl">Номер мобильного телефона</div>
+				<div class="_LK_form_inp <?= ( $reg_err_flag[ 'reg_mobile' ] ? '_LK_form_inp_error' : '' ) ?>"><input class="input_mask_mobile" type="text" name="reg_mobile" value="<?= $reg_mobile ?>" /></div>
+				<div class="clr">&nbsp;</div>
+			</div>
+			
+			<script type="text/javascript">
+				$( document ).ready(function(){
+					$( '.DMTCaptcha_refr' ).click(function(){
+						$( '.DMTCaptcha_img' ).html( '<img src="template/images/loading1.gif" />' );
+						$( '.DMTCaptcha_img' ).load( '<?= $modx->makeUrl( $DMTCaptcha_img ) ?>' );
+					});
+				});
+			</script>
+			<div class="_LK_form_line">
+				<div class="_LK_form_lbl"><div class="DMTCaptcha_img"><img src="[~<?= $DMTCaptcha ?>~]" /></div><div class="DMTCaptcha_refr"><span class="as2">Изменить число</span></div></div>
+				<div class="_LK_form_inp <?= ( $reg_err_flag[ 'reg_captcha' ] ? '_LK_form_inp_error' : '' ) ?>"><div style="padding:10px 0px 7px;">Введите число с картинки</div><input type="text" name="reg_captcha" /></div>
+				<div class="clr">&nbsp;</div>
+			</div>
+			
+			<div class="_LK_form_line">
+				<div class="_LK_form_lbl"><input type="checkbox" name="reg_agreed" value="y"></div>
+				<div class="_LK_form_inp">Я принимаю <a class="as1" target="_blank" href="[~<?= $agreed ?>~]">условия пользовательского соглашения</a></div>
+				<div class="clr">&nbsp;</div>
+			</div>
+			
+			<div class="_LK_form_line _LK_form_line_butt">
+				<div class="_LK_form_lbl"> </div>
+				<div class="_LK_form_inp"><button class="mainbutton buttonsubmit" name="reg_reg" type="submit">Зарегистрироваться</button></div>
+				<div class="clr">&nbsp;</div>
+			</div>
+		</form>
+		<?php } ?>
+	</div>
+	
+	<div class="_LK_form _LK_form_info _LK_form_right">
+		<div class="_LK_form_tit">Преимущества регистрации</div>
+		
+		<p>Зарегистрированные пользователи получают следующие дополнительные возможности:</p>
+		<ul>
+			<li>участие в аукционах;</li>
+			<li>добавление товара в избранное;</li>
+			<li>прямое общение с администрацией портала;</li>
+			<li>отправка притензий;</li>
+		</ul>
+		
+		<p><a class="as1" href="[~<?= $auth ?>~]">Вход для зарегистрированных пользователей</a></p>
+	</div>
+	
+	<div class="clr">&nbsp;</div>
+</div>
+<?php
+mysql_query( "CREATE TABLE IF NOT EXISTS ".$modx->getFullTableName( '_user' )." (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(127) NOT NULL,
+  `surname` varchar(127) NOT NULL,
+  `email` varchar(127) NOT NULL,
+  `mobile` varchar(63) NOT NULL,
+  `passport` varchar(31) NOT NULL,
+  `passport_dth` varchar(15) NOT NULL,
+  `passport_who` varchar(255) NOT NULL,
+  `passport_address` varchar(255) NOT NULL,
+  `urlico` set('n','test','y') NOT NULL DEFAULT 'n',
+  `company` varchar(127) NOT NULL,
+  `maincity` varchar(63) NOT NULL,
+  `address_ur` varchar(255) NOT NULL,
+  `address_ft` varchar(255) NOT NULL,
+  `inn` varchar(31) NOT NULL,
+  `kpp` varchar(31) NOT NULL,
+  `bik` varchar(31) NOT NULL,
+  `ogrn` varchar(31) NOT NULL,
+  `bank` varchar(127) NOT NULL,
+  `rschet` varchar(31) NOT NULL,
+  `kschet` varchar(31) NOT NULL,
+  `enabled` set('y','n') NOT NULL DEFAULT 'y',
+  `dt` bigint(20) NOT NULL,
+  `dt_edit` bigint(20) NOT NULL,
+  `password` varchar(63) NOT NULL,
+  `password_new` varchar(63) NOT NULL,
+  `password_dt` bigint(20) NOT NULL,
+  `secret` varchar(63) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;" );
+mysql_query( "CREATE TABLE IF NOT EXISTS ".$modx->getFullTableName( '_user_h' )." (
+  `id` int(11) NOT NULL,
+  `firstname` varchar(127) NOT NULL,
+  `surname` varchar(127) NOT NULL,
+  `email` varchar(127) NOT NULL,
+  `mobile` varchar(63) NOT NULL,
+  `passport` varchar(31) NOT NULL,
+  `passport_dth` varchar(15) NOT NULL,
+  `passport_who` varchar(255) NOT NULL,
+  `passport_address` varchar(255) NOT NULL,
+  `urlico` set('n','test','y') NOT NULL DEFAULT 'n',
+  `company` varchar(127) NOT NULL,
+  `maincity` varchar(63) NOT NULL,
+  `address_ur` varchar(255) NOT NULL,
+  `address_ft` varchar(255) NOT NULL,
+  `inn` varchar(31) NOT NULL,
+  `kpp` varchar(31) NOT NULL,
+  `bik` varchar(31) NOT NULL,
+  `ogrn` varchar(31) NOT NULL,
+  `bank` varchar(127) NOT NULL,
+  `rschet` varchar(31) NOT NULL,
+  `kschet` varchar(31) NOT NULL,
+  `enabled` set('y','n') NOT NULL DEFAULT 'y',
+  `dt` bigint(20) NOT NULL,
+  `dt_edit` bigint(20) NOT NULL,
+  `password` varchar(63) NOT NULL,
+  `password_new` varchar(63) NOT NULL,
+  `password_dt` bigint(20) NOT NULL,
+  `secret` varchar(63) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;" );
+
+?>

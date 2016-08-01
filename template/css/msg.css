@@ -1,0 +1,338 @@
+.userList {
+	width: 250px;
+	float: left;
+    min-height: 500px;
+    border-right: 1px solid #e0e0e0;
+
+}
+
+
+	.userList >a {
+		display:block;
+		border-bottom: 1px dashed #ccc;
+		height: 50px;
+		cursor:pointer;
+
+	}
+	.userList >a:first-child {
+		border-top: 1px dashed #ccc;
+		height: 50px;
+
+	}
+	
+	
+	.userList >a.grayBg {
+		background-color:#f0f0f0;
+
+	}
+	
+	
+	
+	
+	.userList .oneUser:hover {
+		background-color:#f5f5f5;
+
+	}
+	
+
+
+		.userList .oneUser .nameUser {
+			width: 200px;
+			float: left;
+			padding-left: 10px;
+			padding-top: 4px;
+		}
+		
+		.userList .oneUser .nameUser span {
+		    display: block;
+			font-size: 11px;
+
+		}
+
+		
+
+
+		.userList .oneUser .unreadMsg {
+			width: 40px;
+			float: left;
+			height: 50px;
+			line-height: 50px;
+
+		}
+
+
+			.userList .oneUser .unreadMsg span {
+				background-color: #00ACED;
+				padding: 0 5px;
+				border-radius: 10px;
+				color: #fff;
+
+			}
+
+.messages {
+    float: left;
+    width: 800px;
+    height: 500px;
+    border: 1px solid #eee;
+}
+
+
+
+	.writersInfo {
+		background-color: #f9f9f9;
+		border-bottom: 1px solid #e0e0e0;
+		height:30px;
+	}
+	
+	.writersInfo .writerMe  , .writersInfo .writerFrom{
+		width: 250px;
+		text-align: center;
+		font-size: 12px;
+		height: 30px;
+		line-height: 30px;
+	}
+	
+	.writersInfo .writerMe {
+		float:right;
+	}
+	
+	.writersInfo .writerFrom {
+		float:left;
+	}
+	
+	
+	
+	.messages .msgContent {
+		width: 100%;
+		height: 389px;
+		border-bottom: 1px solid #eee;
+		overflow-y: scroll;
+	}
+	
+	
+	.messages .msgContent .msgMe, .messages .msgContent .msgNotMe {
+		background-color: #D1FFDB;
+        float: right;
+        margin: 10px;
+        max-width: 450px;
+        min-width: 200px;
+        padding: 10px;
+        border-radius: 20px;
+	}
+	
+	.messages .msgContent .msgNotMe {
+		float:left;
+		background-color: #DBE0F3;
+	}
+	
+	.messages .msgContent .msgMe.msgUnread {
+		background-color: #97FFAD;
+	}
+	
+	.messages .msgContent .msgNotMe.msgUnread {
+		background-color: #C9D1F1;
+	}
+	
+	
+	.messages .msgContent .msgMe span, .messages .msgContent .msgNotMe span {
+		display: block;
+		text-align: center;
+		width: 100%;
+		font-size: 9px;
+		margin-top: 10px;
+
+	}
+	
+	
+	
+	
+	
+	
+    
+	
+
+	.messages .sendForm {
+		height: 79px;
+		background-color: #f9f9f9;
+	}
+	
+	.messages .sendForm form textarea {
+		padding: 3px;
+		resize: none;
+		display: block;
+		border: none;
+		background-color: #fff;
+		height: 73px;
+		float: left;
+		width: 640px;
+	}
+	
+	.messages .sendForm form .sendMessageButton {
+		border: none;
+		display: block;
+		margin-right: 3px;
+		float: left;
+		margin-top: 22px;
+		margin-left: 20px;
+		padding: 10px 15px 7px;
+		text-align: center;
+		font-size: 12px;
+		cursor: pointer;
+		background: #C5C5C5;
+		color: #fff;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		border-bottom: 4px solid #A2A2A2;
+		border-radius: 4px;
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
+		text-decoration: none;
+		transition-property: all;
+		transition-duration: 0.2s;
+		transition-timing-function: ease;
+		transition-delay: 0.0s;
+	}
+	
+	.messages .sendForm form .sendMessageButton:hover {
+		 background: #00ACED;
+		border-bottom: 4px solid #0594CA;
+	}
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*SmallMessages*/
+
+
+
+.messagesSmall {
+    float: left;
+    width: 490px;
+    height: 381px;
+    border: 1px solid #eee;
+}
+
+
+
+
+	
+	.messagesSmall .writersInfo .writerMe  , .messagesSmall  .writersInfo .writerFrom{
+		width: 200px;
+		text-align: center;
+		font-size: 12px;
+		height: 30px;
+		line-height: 30px;
+	}
+	
+
+	
+	
+	.messagesSmall .msgContent {
+		width: 100%;
+		height: 300px;
+		border-bottom: 1px solid #eee;
+		overflow-y: scroll;
+	}
+	
+	
+	.messagesSmall .msgContent .msgMe, .messagesSmall .msgContent .msgNotMe {
+		background-color: #D1FFDB;
+        float: right;
+        margin: 10px;
+        max-width: 200px;
+        min-width: 100px;
+        padding: 10px;
+        border-radius: 20px;
+        line-height: normal;
+	}
+	
+
+	.messagesSmall .msgContent .msgNotMe {
+		float:left;
+		background-color: #DBE0F3;
+	}
+	
+	.messagesSmall .msgContent .msgMe.msgUnread {
+		background-color: #97FFAD;
+	}
+	
+	.messagesSmall .msgContent .msgNotMe.msgUnread {
+		background-color: #C9D1F1;
+	}
+	
+	
+	.messagesSmall .msgContent .msgMe span, .messagesSmall .msgContent .msgNotMe span {
+		display: block;
+		text-align: center;
+		width: 100%;
+		font-size: 9px;
+		margin-top: 10px;
+
+	}
+	
+	
+	
+	
+	
+
+	.messagesSmall .sendForm {
+		height: 50px;
+		background-color: #f9f9f9;
+	}
+	
+	.messagesSmall .sendForm form textarea {
+		padding: 3px;
+		resize: none;
+		display: block;
+		border: none;
+		background-color: #fff;
+		height: 50px; 
+		float: left;
+		width: 330px;
+	}
+	
+	.messagesSmall .sendForm form .sendMessageButton {
+		border: none;
+		display: block;
+		margin-right: 3px;
+		float: left;
+		margin-top: 8px;
+		margin-left: 20px;
+		padding: 10px 15px 7px;
+		text-align: center;
+		font-size: 12px;
+		cursor: pointer;
+		background: #C5C5C5;
+		color: #fff;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		border-bottom: 4px solid #A2A2A2;
+		border-radius: 4px;
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
+		text-decoration: none;
+		transition-property: all;
+		transition-duration: 0.2s;
+		transition-timing-function: ease;
+		transition-delay: 0.0s;
+	}
+	
+	.messagesSmall .sendForm form .sendMessageButton:hover {
+		 background: #00ACED;
+		border-bottom: 4px solid #0594CA;
+	}
+	

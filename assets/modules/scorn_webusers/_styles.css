@@ -1,0 +1,395 @@
+
+
+.modul_scorn_all {
+	padding: 10px 15px 10px 15px;
+	=background: #f4f4f4 url( '_images/fon_main_1.png' ) left top repeat;
+	color: #333;
+	font: normal 14px arial, verdana, tahoma, helvetica, sans-serif;
+}
+.modul_scorn_all h1 {
+	margin: 0px 0px 20px 0px;
+	font-size: 20px;
+	border-bottom: 1px solid #ddd;
+}
+
+
+.modul_scorn_all form {
+	margin: 0px;
+}
+
+
+
+.clr {
+	clear: both;
+	font-size: 0px;
+	line-height: 0px;
+}
+
+
+
+
+
+
+
+.topmenu {
+	background: #000 url( '/manager/media/style/MODxRE/images/misc/headers.jpg' ) left bottom no-repeat;
+	padding: 10px 0px 9px 20px;
+	margin: 0px 0px 20px 0px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+	.topmenu ul {
+		color: #dae4e5;
+		text-decoration: none;
+		padding: 0px;
+		margin: 0px;
+		list-style: none;
+	}
+		.topmenu ul li {
+			padding: 0px;
+			margin: 0px;
+			float: left;
+			border-right: 1px solid #849a9a;
+		}
+			.topmenu ul li a {
+				color: #dae4e5;
+				padding: 2px 15px 1px 15px;
+				display: block;
+				text-decoration: none;
+				font-size: 14px;
+				letter-spacing: 1px;
+				text-transform: uppercase;
+			}
+				.topmenu ul li a:hover {
+					background: rgba( 255,255,255, 0.3 );
+					color: #fff;
+				}
+
+
+
+.link {
+	text-decoration: none;
+	color: #000;
+	border-bottom: 1px solid rgba( 0,0,0, 0.2 );
+}
+		.link:hover {
+			color: #e54848;
+			border-bottom: 1px solid #e54848;
+		}
+
+
+
+
+
+.wuser_item {
+	float: left;
+	width: 215px;
+	height: 160px;
+	padding: 10px;
+	margin: 0px 10px 10px 0px;
+	border: 2px solid #eee;
+}
+	.wuser_item .wusi_fio {
+		text-align: center;
+		font-size: 16px;
+		padding: 0px 0px 10px 0px;
+	}
+		.wuser_item .wusi_fio a {
+			font-weight: bold;
+		}
+	.wuser_item .wusi_email {
+		text-align: center;
+		padding: 0px 0px 20px 0px;
+	}
+	.wuser_item .wusi_phone {
+		text-align: center;
+		padding: 0px 0px 10px 0px;
+	}
+	.wuser_item .wusi_ordcc {
+		text-align: center;
+		padding: 0px 0px 10px 0px;
+	}
+	.wuser_item .wusi_score {
+		text-align: center;
+		padding: 0px 0px 15px 0px;
+	}
+	.wuser_item .wusi_dtreg {
+		text-align: center;
+		color: #777;
+		font-size: 10px;
+	}
+
+
+
+
+.userinfoedit {
+	border: 1px;
+	width: 100%;
+	border-collapse: collapse;
+}
+	.userinfoedit tr {
+	}
+		.userinfoedit tr td {
+			border: 1px solid #ddd;
+			border-left: 1px solid #eee;
+			border-right: 1px solid #eee;
+			font-size: 12px;
+			padding: 15px 20px;
+			background: #fff;
+		}
+			.userinfoedit tr td a {
+				font-size: 12px;
+			}
+		.userinfoedit tr .minpadding {
+			padding: 7px 20px;
+		}
+		.userinfoedit tr .tit {
+			width: 200px;
+			text-align: right;
+			font-weight: bold;
+			background: #f0f0f0;
+		}
+		
+		.userinfoedit tr .col_tit {
+			width: 50px;
+			text-align: center;
+		}
+
+		.userinfoedit tr .plus {
+			width: 50px;
+			text-align: center;
+			color: #4e9b2c;
+			font-weight: bold;
+			font-size: 16px;
+		}
+		.userinfoedit tr .minus {
+			width: 50px;
+			text-align: center;
+			color: #d13838;
+			font-weight: bold;
+			font-size: 16px;
+		}
+		.userinfoedit tr .balance {
+			width: 50px;
+			text-align: center;
+			color: #324e72;
+			font-weight: bold;
+			font-size: 16px;
+		}
+		.userinfoedit tr .bldt {
+		}
+		
+
+
+
+.requestsMainBlock {
+	float: left;
+    margin-right: 20px;
+    padding: 5px;
+    width: 400px;
+    border: 1px solid #eee;
+}
+
+	.requestsMainBlock table {
+		width: 390px;
+		padding: 5px;
+		margin: 5px;
+		background-color: #f5f5f5;
+		font-size: 12px;
+		color: #333;
+	}
+
+
+	
+	
+	
+.userInfostable {
+	float:left;
+	font-size: 12px;
+}
+
+.userInfostable tr { 
+    display: block;
+	min-height:25px;
+	border-top:1px dashed #ccc;
+	border-left:1px dashed #ccc;
+	border-right:1px dashed #ccc;
+	width:335px;
+}
+
+.userInfostable tr:last-child {
+	border-bottom:1px dashed #ccc;
+	
+}
+
+
+
+
+.userInfostable tr td:first-child  {
+	width:130px;
+}
+
+.userInfostable tr td:last-child  {
+	border-left:1px dashed #ccc;
+	width:200px;
+}
+
+
+
+.finances, .purchase , .sale, .messages {
+	float:left;
+	min-height:100px;
+	width: 280px;
+	border:1px dashed #ccc;
+	margin: 0 5px;
+	
+}
+
+
+.finances .title , .purchase .title ,  .sale .title , .messages .title  {
+	background-color: #f0f0f0;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 20px;
+    width: 280px;
+	
+}
+
+
+
+.finances .coins_sum{
+	background-color: #f0f0f0;
+    padding: 10px;
+    color: #0064FF;
+	margin-bottom:10px;
+}
+
+
+.finances .coins_info{
+	margin-top: 40px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.finances .coins_info:first-child{
+	margin-top: 10px ;
+}
+
+
+.finances .coins_info_lconis > div {
+	padding: 5px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.finances .coins_info_lconis > div > div {
+	 float: right;
+    color: #999;
+    font-size: 11px;
+}
+
+
+.finances .coins_info_output > div {
+	padding: 5px;
+    height: 30px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.finances .coins_info_output > div > div {
+	 float: right;
+    color: #999;
+    font-size: 11px;
+}
+
+
+.finances .coins_info_input > div {
+	padding: 5px;
+    height: 30px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.finances .coins_info_input > div > div {
+	 float: right;
+    color: #999;
+    font-size: 11px;
+}
+
+.finances .coins_info_prepay > div {
+	padding: 5px;
+    height: 40px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.finances .coins_info_prepay > div > div {
+	 float: right;
+    color: #999;
+    font-size: 11px;
+}
+
+.finances a {
+	text-decoration:none;
+	color:#0089DC;
+}
+
+
+.finances a:hover {
+	color:#f33;
+}
+
+.finances a:visited; {
+	color:#0089DC;
+}
+
+
+
+.finances .coins_info_prepay span {
+	float:right;
+	color:#48AF27;
+}
+
+
+
+
+	.msgContent {
+		width: 100%;
+		height: 420px;
+		border-bottom: 1px solid #eee;
+		overflow-y: scroll;
+	}
+	
+
+	.msgContent .msgMe, .msgContent .msgNotMe {
+		background-color: #D1FFDB;
+		float: right;
+		margin: 10px;
+		max-width: 320px;
+		padding: 10px;
+		border-radius: 20px;
+	}
+	
+	.msgContent .msgNotMe {
+		float:left;
+		background-color: #DBE0F3;
+	}
+	
+	.msgContent .msgMe.msgUnread {
+		background-color: #97FFAD;
+	}
+	
+	.msgContent .msgNotMe.msgUnread {
+		background-color: #C9D1F1;
+	}
+	
+	
+	.msgContent .msgMe span, .msgContent .msgNotMe span {
+		display: block;
+		text-align: center;
+		width: 100%;
+		font-size: 9px;
+		margin-top: 10px;
+
+	}
+	

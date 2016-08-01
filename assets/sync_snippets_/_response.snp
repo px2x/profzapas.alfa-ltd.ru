@@ -1,0 +1,166 @@
+<?php
+
+/*	hghjk пр
+if (!is_numeric($orderId)){
+	return false;
+	
+}
+
+
+*/
+	
+$auth= 108;
+$topage_url= $modx->makeUrl( $modx->documentIdentifier );
+if( ! $_SESSION[ 'webuserinfo' ][ 'auth' ] )
+{
+	header( 'location: '. $modx->makeUrl( $auth ) );
+	exit();
+}
+
+$webuserinfo= $_SESSION[ 'webuserinfo' ][ 'info' ];
+
+$vkladka_active= 1;
+if ($_GET['tab'] == 2) $vkladka_active= 2;
+?>
+
+<div class="vkladki_butts">
+	<div class="vkldk_butt <?= ( $vkladka_active == 1 ? 'active' : '' ) ?>" data-id="1">Ожидается ggg <?=$modx->runSnippet( '_LK_getCountEvent', array('event' => 'waitResponse'))?></div>
+	<div class="vkldk_butt <?= ( $vkladka_active == 2 ? 'active' : '' ) ?>" data-id="2">Опубликованные</div>
+	<div class="clr">&nbsp;</div>
+</div>
+
+
+<div class="vkladki_divs">
+	
+	
+
+
+	
+	
+	<!--========================TAB 1 START================================================-->
+	
+<?php
+	
+$sql = "SELECT  resp.* , usr.firstname , usr.surname, ordrs.order_number,ordrs.date_w_check AS dateorder, ordrs.id, cat.id AS catid, cat.title , cat.parent, cat.code , cat.manufacturer , cat.manufacturer_country, cat.`text` 
+		FROM ".$modx->getFullTableName( '_order_items' )."  AS oi
+		INNER JOIN ".$modx->getFullTableName( '_orders' )."  AS ordrs ON oi.id_order = ordrs.id
+		INNER JOIN ".$modx->getFullTableName( '_catalog' )."  AS cat ON cat.id = oi.id_item
+		INNER JOIN ".$modx->getFullTableName( '_user' )."  AS usr ON usr.id = cat.seller
+		LEFT JOIN ".$modx->getFullTableName( '_responses' )."   AS resp ON (resp.id_cat_item = oi.id_item AND resp.id_order = ordrs.id)
+		WHERE ordrs.user_id = 6
+		AND (ordrs.`status` = 'waitEnd'
+			OR ordrs.`status` = 'ended'
+			)
+		AND resp.id_cat_item is NULL
+		";
+
+$rows = false;
+if ($result = mysql_query($sql)){
+	while ($tmp  = mysql_fetch_assoc($result)){
+		$rows[] = $tmp;
+	}
+
+}
+
+$bodyWaitResponse = '<div class="bodyWaitResponse">';
+
+	$bodyWaitResponse .='
+	<div class="bodyWaitResp_line_tit">
+		<div class="resp_code">Арт.</div>
+		<div class="resp_title">Наименование</div>
+		<div class="resp_manuf">Производитель</div>
+		<div class="resp_order">№ заказа</div>
+		<div class="resp_seller">Продавец</div>
+	</div>';
+
+
+if (is_array($rows)){
+	foreach ($rows AS $row) {
+		
+	//достаем картинки -----START
+	$sqlimg = "SELECT ci.link
+				FROM  ".$modx->getFullTableName( '_catalog_images' )." AS ci
+				WHERE ci.id_item =  '".$row['id']."' ";
+	$resultimg = mysql_query($sqlimg) or die ('Error Select sqlimg: '. mysql_error());
+	$mainImg = '';
+	while ($rowimg = mysql_fetch_assoc($resultimg)){
+		if ($mainImg == '') {
+			$mainImg = '<div class="previevBimg" style="background-image:url('. $modx->runSnippet( 'ImgCrop6', array( 'img' => $rowimg[ 'link' ], 'w' => 440, 'h' => 400, 'fill' => 0 , 'wm' =>1 ) ) .');" /> </div>';
+		}
+	}
+	if ($mainImg == '') {
+		$mainImg = '<div class="previevBimg" style="background-image:url('. $modx->runSnippet( 'ImgCrop6', array( 'img' => 'template/images/notphoto.png', 'w' => 340, 'h' => 300, 'fill' => 0 , 'wm' =>1 ) ) .');" /> </div>';
+
+	}
+
+	//достаем картинки -----END
+		
+		
+		$bodyWaitResponse .='
+		<div class="bodyWaitResp_line">
+			<div class="resp_code"><a class="as1" href="'. $modx->makeUrl( $row[ 'parent' ] ) .'i/'. $row[ 'catid' ] .'/">'.$row['code'].'</a></div>
+			<div class="resp_title">'.$row['title'].'</div>
+			<div class="resp_manuf">'.$row['manufacturer'].' ('.$row['manufacturer_country'].')</div>
+			<div class="resp_order">'.$row['order_number'].'</div>
+			<div class="resp_seller">'.$row['firstname'].' '.$row['surname'].'</div>
+			<div class=hid_px_popup_data>
+				<div class="px_pp_title">'.$row['title'].'</div>
+				<div class="px_pp_photo">'.$mainImg.'</div>
+				<div class="px_pp_vendor">'.$row['manufacturer'].' <span>('.$row['manufacturer_country'].')<span></div>
+				<div class="px_pp_dateOrd">'.(date("d.m.Y H:i",$row['dateorder'])).'</div>
+				<div class="px_pp_description">'.$row['text'].'</div>
+				<div class="clr"></div>
+				<textarea class="px_pp_inp_response" placeholder="Введите текст отзыва"></textarea>
+				<button class="px_pp_inp_response_send" data-order_id="'.$row['id'].'" data-item_id="'.$row['catid'].'">Отправить</button>
+				<div class="waitCheckRes">
+					<div class="checkResult"></div>
+					<div class="wrap">
+						<div class="dot"></div>
+					</div>
+				</div>
+			</div>
+		</div>';
+	}
+}
+
+
+
+$bodyWaitResponse .= '</div>';
+?>
+	
+	<div class="vkldk_div vkldk_div_1 <?= ( $vkladka_active == 1 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">
+			<?=$bodyWaitResponse?>
+			<div class="clr">&nbsp;</div>
+		</div>
+		<div class="clr">&nbsp;</div>
+	</div>
+	<div class="clr">&nbsp;</div>
+	<!--========================TAB 1 END================================================-->	
+	
+	
+	
+	
+	
+	
+	<!--========================TAB 1 END================================================-->	
+	<div class="vkldk_div vkldk_div_2 <?= ( $vkladka_active == 2 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">
+			
+			<div class="clr">&nbsp;</div>
+		</div>
+		<div class="clr">&nbsp;</div>
+	</div>
+	<div class="clr">&nbsp;</div>
+	<!--========================TAB 1 END================================================-->
+	
+	
+	
+	
+</div>
+
+<?php
+//<a href="'.$topage_url.'?confirmTestId='.$row['id'].'" class="greenButton">Подтвердить качество</a>
+
+
+?>

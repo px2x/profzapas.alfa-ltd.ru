@@ -1,0 +1,15 @@
+<?php
+
+//v01
+//=============================================================
+if( $c == 'rub' ) return $price;
+$rate= $modx->runSnippet( 'ExchangeRates', array( 'c' => $c ) );
+$price= str_replace( ",", ".", $price );
+$rate= str_replace( ",", ".", $rate );
+return round( $price * $rate );
+
+
+
+
+
+?>

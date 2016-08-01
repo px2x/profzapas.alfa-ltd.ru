@@ -1,0 +1,269 @@
+<?php
+
+$lk= 106;
+$reg= 107;
+$auth= 108;
+$currentPage = $modx->documentIdentifier;
+if($_SESSION['mgrShortname'] == 'admin' || $_SESSION['mgrShortname'] == 'manager') {
+
+}else {
+	if( ! $_SESSION[ 'webuserinfo' ][ 'auth' ]  )
+	{
+		if ($currentPage != $auth) {
+			header( 'location: '. $modx->makeUrl( $auth ) );
+			exit();
+		}else return false;
+	}
+}
+$webuserinfo= $_SESSION[ 'webuserinfo' ][ 'info' ];
+$topage_url= $modx->makeUrl( $currentPage );
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+
+
+
+
+//=============================================BUY====================
+if ($event == 'getTopTeenHTML' && is_array($arr)) {
+	
+	if ($type == 'see') {
+		$typeText = 'просматриваемых'; 
+		$typeText2 = 'Просмотров';
+		$typeText3 = '';
+		$key = 'cnt';
+		$bigestSelBArr = $arr;
+	}
+	
+	if ($type == 'search'){
+		$typeText = 'востребованных'; 
+		$typeText2 = 'Искали';
+		$typeText3 = '';
+		$key = 'cnt';
+		$bigestSelBArr = $arr;
+	} 
+	
+	if ($type == 'buy'){
+		$typeText = 'продаваемых'; 
+		$typeText2 = 'Всего продано';
+		$typeText3 = 'шт.';
+		$key = 'summItem';
+		$bigestSelBArr = $modx->runSnippet( '_LK_getStatistic', array( 'event' => 'getBigestItemBuy', 'sellerID' => $webuserinfo['id']));
+	}
+	
+	
+
+
+
+$topTeenItemsBuy = '
+	<div class="topTeen">
+		<div class="topTeen_code_tit">Код</div>
+		<div class="topTeen_name_tit">Наименование</div>
+		<div class="topTeen_vend_tit">Производитель</div>
+		<div class="topTeen_price_tit">'.$typeText2.'</div>
+		<div class="topTeen_inStock_tit">Остаток</div>
+		<div class="clr"></div>
+	
+';
+	
+if (is_array($bigestSelBArr)){
+	foreach ($bigestSelBArr as $row){
+		$topTeenItemsBuy .= '
+			<div class="topTeen_code"><a class="as1" href="'. $modx->makeUrl( $row[ 'parent' ] ) .'i/'. $row[ 'id' ] .'/">'. $row[ 'code' ] .'</a></div>
+			<div class="topTeen_name">'.$row['title'].'</div>
+			<div class="topTeen_vend">'.$row['manufacturer'].'</div>
+			<div class="topTeen_price">'.$row[$key].' '.$typeText3.'</div>
+			<div class="topTeen_inStock">'.$row['in_stock'].' шт.</div>
+			<div class="clr"></div>';
+	}
+}
+
+$topTeenItemsBuy .= '
+	</div>
+';
+
+
+
+	
+$bigestSelB = '
+	<div id="statisticBlock">
+		<div class="stb_title">Топ 10 самых '.$typeText.'</div>
+		<div class="stb_data">'.$topTeenItemsBuy.'</div>
+	</div>
+	<div class="clr">&nbsp;</div>
+	';
+	
+	
+	return $bigestSelB;
+	
+}
+
+
+
+
+
+if ($event == 'allEndOrdCount' && is_array($arr)) {
+
+$thisTimeStamp = time();
+$allSummEndOrdCount = 0;
+$lastMonthSummCount = 0;
+$lastWeekSummCount = 0;
+
+$lastMonthCount = 0;
+$lastWeekCount = 0;
+
+	if ($type == ''){
+		$indexKey  = 'date_end';	
+		
+	}elseif ($type == 'see') {
+		$indexKey  = 't_stamp';	
+		
+	}elseif ($type == 'search'){
+		$indexKey  = 't_stamp';	
+	}	
+	
+if (is_array($arr)){
+	foreach ($arr as $tmp){
+		$allSummEndOrdCount +=  $tmp['event'];
+
+		if ($tmp[$indexKey] + 60*60*24*30 > $thisTimeStamp){
+			$lastMonthCount++;
+			$lastMonthSummCount +=  $tmp['event'];
+
+			if ($tmp[$indexKey] + 60*60*24*7 > $thisTimeStamp){
+
+				$lastWeekCount++;
+				$lastWeekSummCount  +=  $tmp['event'];
+			}
+		}
+	}
+}
+
+$allEndOrdCount = '
+	<!--div class="statisticOneLineFirst"></div-->
+	<div class="statisticOneLine">Всего выполнено заказов: '.count($arr).', на общую сумму: '.$allSummEndOrdCount.' руб.</div>
+	<div class="statisticOneLine">За последние 30 дней: '.$lastMonthCount.', на сумму: '.$lastMonthSummCount.' руб.</div>
+	<div class="statisticOneLine">За последние 7 дней: '.$lastWeekCount.', на сумму: '.$lastWeekSummCount.' руб.</div>
+	<div id="curve_chart"></div>
+	<div class="clr">&nbsp;</div>
+	';
+	
+	return $allEndOrdCount;
+
+}
+
+
+//toJSChartData
+
+
+if ($event == 'toJSChartData' && is_array($arr)) {
+
+$thisTimeStamp = time();
+
+	
+	if ($type == 'see' || $type == 'search') {
+		$indexKey = 't_stamp';
+		$indexKey2 = 'cnt';
+		
+	}else {
+		$indexKey = 'date_end';
+		$indexKey2 = 'event';
+	}
+	
+	//echo $type.'='.$indexKey.'='.$indexKey2;
+	$day = date("d",$thisTimeStamp );
+	$month = date("m",$thisTimeStamp );
+	$year = date("Y",$thisTimeStamp );
+
+	$startTodayTS = strtotime($year."-".$month."-".$day);
+	$endTodayTS = strtotime("+1 day",$startTodayTS);
+	
+	$toJSdata = '';
+	$toJSdataArr = [];
+	for ($i = 0; $i<31 ; $i++){
+		
+		$startInterval = strtotime("-".$i." day",$startTodayTS);
+		$endInterval = strtotime("-".$i." day",$endTodayTS);
+		$tmpCounter = 0;
+		foreach ($arr as $row){
+			if ($row[$indexKey] >= $startInterval && $row[$indexKey] < $endInterval){
+				$tmpCounter += $row[$indexKey2];
+			}
+		}
+		$toJSdataArr[date("d.m", $startInterval)]['summSell']=$tmpCounter;	
+	}
+
+if (is_array($toJSdataArr)){
+	foreach ($toJSdataArr AS $key => $value) {
+		$toJSdata .= '[\''.$key.'\',  '.$value['summSell'].'],';
+	}
+}
+	if ($toJSdata == '') {
+		return false;
+	
+	}else {
+	
+		return $toJSdata;
+	} 
+	
+}
+
+
+
+
+
+
+
+
+
+//==============================SEE==============================
+
+
+if ($event == 'seeStatistocSummary' && is_array($arr)) {
+
+$thisTimeStamp = time();
+$allSummEndOrdCount = 0;
+$lastMonthSummCount = 0;
+$lastWeekSummCount = 0;
+
+$lastMonthCount = 0;
+$lastWeekCount = 0;
+$indexKey  = 't_stamp';	
+	
+	if ($type == 'see') {
+		$rrtext = 'просмотров';
+	}elseif ($type == 'search') {
+		$rrtext = 'искали';
+	}
+
+if (is_array($arr)){
+	foreach ($arr as $tmp){
+		$allSummEndOrdCount += $tmp['cnt'];
+		
+		if ($tmp[$indexKey] + 60*60*24*30 > $thisTimeStamp){
+			$lastMonthCount += $tmp['cnt'];
+	
+
+			if ($tmp[$indexKey] + 60*60*24*7 > $thisTimeStamp){
+				$lastWeekCount += $tmp['cnt'];
+			}
+		}
+	}
+}
+
+$allEndOrdCount = '
+	<div class="statisticOneLineFirst"></div>
+	<div class="statisticOneLine">Всего '.$rrtext.': '.$allSummEndOrdCount.'</div>
+	<div class="statisticOneLine">За последние 30 дней: '.$lastMonthCount.'</div>
+	<div class="statisticOneLine">За последние 7 дней: '.$lastWeekCount.'</div>
+
+	';
+	
+	return $allEndOrdCount;
+
+}
+
+
+
+
+
+?>

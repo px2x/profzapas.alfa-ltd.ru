@@ -1,0 +1,726 @@
+<?php
+
+$lk= 106;
+$reg= 107;
+$auth= 108;
+$topage_url= $modx->makeUrl( $modx->documentIdentifier );
+
+if( ! $_SESSION[ 'webuserinfo' ][ 'auth' ] )
+{
+	header( 'location: '. $modx->makeUrl( $auth ) );
+	exit();
+}
+
+$webuserinfo= $_SESSION[ 'webuserinfo' ][ 'info' ];
+
+
+$topage= ( $topage ? intval( $topage ) : $modx->documentIdentifier );
+$topage_url= $modx->makeUrl( $topage );
+
+
+$vkladka_active= 1;
+if ($_GET['tab'] == 2) $vkladka_active= 2;
+if ($_GET['tab'] == 3) $vkladka_active= 3;
+
+?>
+
+
+
+<div class="vkladki_butts">
+	<div class="vkldk_butt <?= ( $vkladka_active == 1 ? 'active' : '' ) ?>" data-id="1">История операций</div>
+	<div class="vkldk_butt <?= ( $vkladka_active == 2 ? 'active' : '' ) ?>" data-id="2">Пополнить</div>
+	<div class="vkldk_butt <?= ( $vkladka_active == 3 ? 'active' : '' ) ?>" data-id="3">Вывести средства</div>
+	<div class="clr">&nbsp;</div>
+</div>
+
+
+
+
+<div class="vkladki_divs">
+
+<?php	
+if (is_numeric($_GET['deleteIDout'])){
+	
+	$deleteID = addslashes($_GET['deleteIDout']);
+	$resultIdUser = mysql_query("SELECT id_user FROM ".$modx->getFullTableName( '_points_up' )." WHERE id = {$deleteID}") or die ('error select from points' .mysql_error() );
+	if ($id_user_pu = mysql_fetch_assoc($resultIdUser)['id_user']){
+		//echo "tttttttttttt";
+		if ($id_user_pu == $webuserinfo['id']){
+			$resultUpdate = mysql_query("UPDATE ".$modx->getFullTableName( '_points_up' )." SET status = 'sellerAbort'  WHERE id = {$deleteID}") or die ('error update del points' .mysql_error() );
+			if ($resultUpdate) {
+				/*
+				$textOk = '
+				<div class="_LK_ok">
+					<p>Запись успешно удалена</p>
+				</div>';
+				*/
+				header( 'location: '. $topage_url.'?tab=3&ok3' );
+				exit();
+			}
+		}
+	} 
+}
+?>
+<!--==============================TAB1=START================================-->	
+	
+<?php
+    
+    
+    
+    $sqlEVENts = "UPDATE ".$modx->getFullTableName( '_finances_events' )."  SET see = 1
+		WHERE id_user = ".$webuserinfo['id'];
+	mysql_query($sqlEVENts);
+    
+    
+$pageBuffer= '';
+//select all history
+$sql = "SELECT * FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' ORDER BY id DESC LIMIT 100";
+$result = mysql_query($sql) or die ('Error Select coins history');
+
+//select hash
+$sqlHash = "SELECT hash FROM  ".$modx->getFullTableName( '_coins' )." WHERE id_user =  '".$webuserinfo['id']."' LIMIT 1";
+$resultHash = mysql_query($sqlHash) or die ('Error Select coins hash');
+$coinsHash = mysql_fetch_row($resultHash)[0];
+
+//select summ wait output
+$sqlSummOutput = "SELECT SUM(sum) FROM  ".$modx->getFullTableName( '_points_up' )." WHERE id_user =  '".$webuserinfo['id']."' AND type = 'output'  AND status = 'wait' LIMIT 1";
+$resultSummOutput = mysql_query($sqlSummOutput) or die ('Error SUMMPrep coins history');
+$coinsSummOutputInt = mysql_fetch_row($resultSummOutput)[0];
+
+
+
+//ДЕНЬГИ ЗА ПРОДАЖИ КОТОРЫЕ НА ТЕК. МОМЕНТ В ДОСТАВКЕ
+$sqlSummNotConfirm = "SELECT SUM(event) FROM  ".$modx->getFullTableName( '_coins_history' )." AS hist
+					LEFT JOIN ".$modx->getFullTableName( '_orders' )." AS ord ON ord.id = hist.shop_id
+					WHERE hist.id_user =  '".$webuserinfo['id']."'   
+					AND (ord.status <>  'ended'OR hist.key = -1)
+					AND hist.shop_id >0
+					AND hist.type =  'payUp'
+					LIMIT 1";
+$resultNotConfirm = mysql_query($sqlSummNotConfirm) or die ('Error 634437 SUMMPrep coins history');
+$resultNotConfirmInt = mysql_fetch_row($resultNotConfirm)[0];
+
+
+
+//select last rec history
+$sqlLast = "SELECT * FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' ORDER BY id DESC LIMIT 1 ";
+$resultLast = mysql_query($sqlLast) or die ('Error Select coins history');
+$coinsLast = mysql_fetch_assoc($resultLast);
+
+
+//всего средств
+$sqlSumm = "SELECT SUM(event) FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' LIMIT 1";
+$resultSumm = mysql_query($sqlSumm) or die ('Error всего средств');
+$coinsSummHH = mysql_fetch_row($resultSumm)[0];
+
+$hash = md5($coinsLast['date'].$coinsLast['event'].$coinsLast['type'].$coinsLast['id_user'].$coinsSummHH);
+//$hash = md5($toDBdate.$toDBevent.$toDBtype.$userId.$coinsSummHH);
+//TEMPORARY WITHOUT HASH
+$hash =($coinsLast['date'].'_'.$coinsLast['event'].'_'.$coinsLast['type'].'_'.$coinsLast['id_user'].'_'.$coinsSummHH);
+
+//$hash = ($coinsLast['date'].'_'.$coinsLast['event'].'_'.$coinsLast['type'].'_'.$coinsLast['id_user'].'_'.$coinsSummHH);
+if ($coinsHash==$hash) {
+	$sqlSumm = "SELECT SUM(event) FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' LIMIT 1";
+	$resultSumm = mysql_query($sqlSumm) or die ('Error SUMM coins history');
+	$coinsSumm = mysql_fetch_row($resultSumm)[0] - $coinsSummOutputInt;
+
+	
+	
+	$sqlSummPrepay = "SELECT SUM(event) FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' AND type = 'prepayment' LIMIT 1";
+	$resultSummPrepay = mysql_query($sqlSummPrepay) or die ('Error SUMMPrep coins history');
+	$coinsSummPrepay = mysql_fetch_row($resultSummPrepay)[0];
+
+	//оплаченный аванс
+	$sqlSummPrepayPay = "SELECT SUM(ABS(event)) FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' AND type = 'prepaymentPAY' AND event < 0 LIMIT 1";
+	$resultSummPrepayPay = mysql_query($sqlSummPrepayPay) or die ('Error в качестве аванса');
+	$coinsSummPrepayPay = mysql_fetch_row($resultSummPrepayPay)[0];
+	
+	/*
+	$sqlSummPrivate = "SELECT SUM(event) FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' AND type <> 'prepayment' LIMIT 1";
+	$resultSummPrivate = mysql_query($sqlSummPrivate) or die ('Error SUMMPrep coins history');
+	$coinsSummPrivate = mysql_fetch_row($resultSummPrivate)[0] - $coinsSummOutputInt +$coinsSummPrepayPay;
+	*/
+	$coinsSummPrivate = $coinsSumm -  $resultNotConfirmInt  - $coinsSummPrepay + $coinsSummPrepayPay;
+	
+
+	
+
+	$pageBuffer.= '
+	<div class="coinsInfo_tit">
+		Доступно средств: <span>'. $modx->runSnippet( 'Price', array( 'price' => $coinsSumm - $resultNotConfirmInt +$coinsSummPrepayPay, 'round' => 0 ) ) .'</span>
+	</div>
+	<div class="coinsInfo">
+		<div class="coinsInfo_top">Получено в качестве аванса: <span>'. $modx->runSnippet( 'Price', array( 'price' => $coinsSummPrepay, 'round' => 0 ) ) .'</span></div>
+		<div class="coinsInfo_bottom">Ваших личных средств: <span>'. $modx->runSnippet( 'Price', array( 'price' => $coinsSummPrivate, 'round' => 0 ) ) .'</span></div>
+		<div class="coinsInfo_bottom">Ожидают вывода: <span>'. $modx->runSnippet( 'Price', array( 'price' => $coinsSummOutputInt, 'round' => 0 ) ) .'</span></div>
+	</div>
+	<div class="clr"></div>
+	';
+
+	$pageBuffer.= '
+	<div class="lkItemtitle">
+		<div class="coins_event_tit">Событие</div>
+		<div class="coins_date_tit" style="width: 150px;">Дата</div>
+		<div class="coins_info_tit" style="width: 450px;">Информация</div>
+	</div>';
+	$fGray = 1;
+	$fillGrayBG = 'fillGrayBG';
+
+	while ($row = mysql_fetch_assoc($result)) {
+		$fGray = $fGray * -1;
+	
+		if ($row['type'] == 'payUp' && $row['key'] == -1 && $row['shop_id'] != 0 ) {
+			$fGray = $fGray * -1;
+			continue;
+		}
+		if ($row['type'] == 'prepayment'){
+			if ($row['event'] < 0){
+				if ($row['shop_id'] > 0){
+				$typeText = 'Потрачено со счета аванса на '.$row['shop_id'];
+				} else {
+					$typeText = 'Потрачено со счета аванса';
+				}
+			} else {
+				$typeText = 'Получено в качестве аванса';
+			}
+			
+		}elseif ($row['type'] == 'payUp'){
+			if ($row['shop_id'] > 0){
+				$typeTextDop = '';
+				$sqlStatus = "SELECT status FROM  ".$modx->getFullTableName( '_orders' )." WHERE id =  '".$row['shop_id']."' LIMIT 1";
+				$resultStatus = mysql_query($sqlStatus) or die ('Error Select coins history - '.mysql_error());
+				$statusValue = mysql_fetch_assoc($resultStatus)['status'];
+				if ($statusValue != 'ended') {
+					$typeTextDop = ' (Не завершен)';
+				}
+				$typeText = 'От выполнения заказа '.$row['shop_id'].$typeTextDop;
+			}else {
+				//$typeText = 'Пополнено через ROBOKASSA';
+				$sqlPointsT = "SELECT type FROM  ".$modx->getFullTableName( '_points_up' )." WHERE id_user =  '".$row['id_user']."' AND timest =  '".$row['timest_fk']."' AND  sum =  '".$row['event']."' ORDER BY id DESC LIMIT 1";
+				$resultPointsT = mysql_query($sqlPointsT) or die ('Error Select coins history');
+				$pointsT = mysql_fetch_assoc($resultPointsT)['type'];
+				if ($pointsT == 'robo') {
+					$pointsT = 'ROBOKASSA';
+				}elseif($pointsT == 'sber'){
+					$pointsT = 'Сбербанк';
+				}elseif($pointsT == 'schet'){
+					$pointsT = 'оплату счета';
+				}
+				$typeText = 'Пополнено через '.$pointsT;
+			}
+			
+
+		}elseif ($row['type'] == 'payDown'){
+			if ($row['shop_id'] > 0){
+				$typeText = 'Потрачено на '.$row['shop_id'];
+			} else {
+				if ($row['key'] >= 0){
+					$typeText = 'Списано с личного счета для погашения аванса';
+				}else  {
+					$typeText = 'Выведено из системы';
+				}
+				
+			}
+			
+		}elseif ($row['type'] == 'prepaymentPAY'){
+			$typeText = 'Списано в счет погашения аванса';
+		}elseif (is_numeric($row['type'])){
+			$typeText = 'Совершена покупка: '.$row['type'];
+		}
+		//elseif (is_numeric) 
+		/*
+		*при покупке вставлять внешний ключ на запись с покупкой 
+		*т.е. 3 варианта - prepayment, payUp и число
+		*
+		*
+		*
+		*/
+		/*	
+		$pageBuffer.= '
+		<div class="lkItem  '.($fGray > 0 ? $fillGrayBG : '' ).' ">
+			<div class="coins_event_body '.($row['event'] > 0 ? 'tx_green">+' : 'tx_red">' ).$row['event'].'</div>
+			<div class="coins_date_body" style="width: 300px;">'.date("d.m.Y H:i:s",$row['date']).'</div>
+			<div class="coins_info_body">'.$typeText.'</div>
+		</div>
+		';
+		*/
+		
+		$greenOrRedStyle = 'tx_green';
+		if ($row['event'] < 0) {
+			$greenOrRedStyle = 'tx_red';
+		}
+		
+		if ($row['event'] < 0 && $row['type'] == 'prepaymentPAY') {
+			$row['event'] = '<span class="tx_green">+'.($row['event']*-1).'</span> <span style="color:#777;">/</span> '.$row['event'];
+		}
+		
+		
+		$pageBuffer.= '
+		<div class="lkItem  '.($fGray > 0 ? $fillGrayBG : '' ).' ">
+			<div class="coins_event_body '.$greenOrRedStyle.'">'.$row['event'].'</div>
+			<div class="coins_date_body" style="width: 150px;">'.date("d.m.Y H:i:s",$row['date']).'</div>
+			<div class="coins_info_body" style="width: 450px;">'.$typeText.'</div>
+		</div>
+		';
+		
+		
+		
+	}
+}elseif ($coinsHash == false && $coinsSummHH == false){
+	$pageBuffer.= '
+	<div class="coinsInfo_tit">
+		Доступно средств: <span>'. $modx->runSnippet( 'Price', array( 'price' => $coinsSumm, 'round' => 0 ) ) .'</span>
+	</div>
+	<div class="coinsInfo">
+		<div class="coinsInfo_top">Получено в качестве аванса: <span>'. $modx->runSnippet( 'Price', array( 'price' => $coinsSummPrepay, 'round' => 0 ) ) .'</span></div>
+		<div class="coinsInfo_bottom">Ваших личных средств: <span>'. $modx->runSnippet( 'Price', array( 'price' => $coinsSummPrivate, 'round' => 0 ) ) .'</span></div>
+		<div class="coinsInfo_bottom">Ожидают вывода: <span>'. $modx->runSnippet( 'Price', array( 'price' => $coinsSummOutputInt, 'round' => 0 ) ) .'</span></div>
+	</div>
+	<div class="clr"></div>
+	';
+    
+    
+    
+    
+
+        
+    
+}else {
+	echo $coinsHash .'<br>';
+	echo $hash .'<br>';
+	echo('Ошибка внутреннего счета. Обратитесь к администратору сайта');
+}
+//$hash = md5($toDBdate.$toDBevent.$toDBtype.$userId);
+
+
+	
+?>
+	<div class="vkldk_div vkldk_div_1 <?= ( $vkladka_active == 1 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">
+			<?=$pageBuffer?>
+		</div>
+	</div>
+<!--==============================TAB1==END================================-->	
+	
+	
+	
+	
+<!--==============================TAB2=START================================-->	
+	
+<?php
+$error = false;
+if (isset($_POST['save_2'])){
+	//Ваш запрос успешно добавлен! Наш менеджер свяжется с вами для выставления счета. 
+	if (is_numeric($_POST['coins_sum']) && isset($_POST['coins_type']) && $_POST['coins_sum'] >0){
+		
+        
+        
+        
+		$toDBidUser = $webuserinfo['id'];
+		$toDBdate = time();
+		$toDBstatus = 'wait';
+		$toDBsum = addslashes($_POST['coins_sum']);
+		$toDBtype = addslashes($_POST['coins_type']);
+        
+        if ($toDBtype == "reqPrepay") {
+            mysql_query("INSERT INTO ".$modx->getFullTableName( '_request_prepay' )." 
+            (id, id_user, timestamp, summ) 
+            VALUES 
+            (NULL, {$toDBidUser}, {$toDBdate}, '{$toDBsum}')") or die ('error Insert to points' .mysql_error() );
+            
+            header( 'location: '. $topage_url.'?tab=2&ok222' );
+            exit();
+            
+        }else {
+            
+            mysql_query("INSERT INTO ".$modx->getFullTableName( '_points_up' )." (id, id_user, timest, status, sum, type ) VALUES (NULL, {$toDBidUser}, {$toDBdate}, '{$toDBstatus}', '{$toDBsum}', '{$toDBtype}')") or die ('error Insert to points' .mysql_error() );
+
+            if ($toDBtype == 'robo') {
+                header( 'location: '. $modx->makeUrl( 197 )."?id_user={$toDBidUser}&sum={$toDBsum}&timest={$toDBdate}" );
+                exit();
+            }elseif ($toDBtype == 'schet') {
+                header( 'location: '. $topage_url.'?tab=2&ok2' );
+                exit();
+
+            }else{
+                header( 'location: '. $topage_url.'?tab=2&ok2' );
+                exit();
+            }
+
+             
+        }
+        
+        
+
+		
+		//echo print_r($_SERVER);
+			
+	}elseif($_POST['coins_sum'] <= 0){
+		$error = 'Введите корректную сумму';
+	}
+	
+    
+}
+
+
+if (is_numeric($_GET['deleteID'])){
+	
+	$deleteID = addslashes($_GET['deleteID']);
+	$resultIdUser = mysql_query("SELECT id_user FROM ".$modx->getFullTableName( '_points_up' )." WHERE id = {$deleteID}") or die ('error select from points' .mysql_error() );
+	if ($id_user_pu = mysql_fetch_assoc($resultIdUser)['id_user']){
+		//echo "tttttttttttt";
+		if ($id_user_pu == $webuserinfo['id']){
+			$resultUpdate = mysql_query("UPDATE ".$modx->getFullTableName( '_points_up' )." SET status = 'sellerAbort'  WHERE id = {$deleteID}") or die ('error update del points' .mysql_error() );
+			if ($resultUpdate) {
+				/*
+				$textOk = '
+				<div class="_LK_ok">
+					<p>Запись успешно удалена</p>
+				</div>';
+				*/
+				header( 'location: '. $topage_url.'?tab=2&ok22' );
+				exit();
+			}
+		}
+	} 
+}
+
+//select all history
+$sql = "SELECT * FROM  ".$modx->getFullTableName( '_points_up' )." WHERE id_user =  '".$webuserinfo['id']."' AND (status= 'wait') AND type <> 'output' ORDER BY id DESC LIMIT 50";
+$result = mysql_query($sql) or die ('Error Select points up');
+
+$pageBuffer ='<div class="analogHeads">Ожидается оплата</div>';
+$pageBuffer.= '
+<div class="lkItemtitle">
+	<div class="coins_event_tit">Событие</div>
+	<div class="coins_date_tit">Дата</div>
+	<div class="coins_info_tit">Информация</div>
+	<div class="coins_dop_tit">Печать</div>
+	<div class="coins_dop_tit">Удалить</div>
+</div>';
+
+$fGray = 1;
+$fillGrayBG = 'fillGrayBG';
+while ($row = mysql_fetch_assoc($result)) {
+	$fGray = $fGray * -1;
+	if ($row['type'] == 'sber'){
+		$typeText = 'Пополнение через Сбербанк';
+	}elseif ($row['type'] == 'schet'){
+		$typeText = 'Пополнение через оплату счета';
+	}
+	
+	if ($row['type'] == 'sber'){
+		$text = '
+			<div class="coins_dop_body"><img src="/template/images/printicon.png" /></div>
+			<div class="coins_dop_body"><a href="'.$topage_url.'?tab=2&deleteID='.$row['id'].'"><img src="/template/images/deleteicon.png" /></a></div>
+		';
+	}elseif ($row['type'] == 'schet'){
+		$text = '
+			<div class="coins_dop_body"><a href="genFromTemp_finances.php?recID='.$row['id'].'"><img src="/template/images/printicon.png" /></a></div>
+			<div class="coins_dop_body"><a href="'.$topage_url.'?tab=2&deleteID='.$row['id'].'"><img src="/template/images/deleteicon.png" /></a></div>
+		';
+	} 
+	
+	
+	//ненужный кусок кода
+	/*
+	if ($row['type'] <> 'robo' && $row['status'] <> 'sellerAbort'){
+		$text = '
+			<div class="coins_dop_body"><img src="/template/images/printicon.png" /></div>
+			<div class="coins_dop_body"><a href="'.$topage_url.'?tab=2&deleteID='.$row['id'].'"><img src="/template/images/deleteicon.png" /></a></div>
+		';
+	}elseif ($row['type'] <> 'robo' && $row['status'] == 'sellerAbort'){
+		$text = '
+			<div class="coins_dop_body"></div>
+			<div class="coins_dop_body">Отменено</div>
+		';
+	}
+	*/
+	//ненужный кусок кода END
+	
+	$pageBuffer.= '
+		<div class="lkItem  '.($fGray > 0 ? $fillGrayBG : '' ).' ">
+			<div class="coins_event_body tx_green">+ '.$row['sum'].'</div>
+			<div class="coins_date_body">'.date("d.m.Y H:i:s",$row['timest']).'</div>
+			<div class="coins_info_body">'.$typeText.'</div>
+			'.$text.'
+		</div>
+	';
+}	
+
+
+?>
+	<div class="vkldk_div vkldk_div_2 <?= ( $vkladka_active == 2 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">	
+			<div class="_LK_form">		
+
+				<?php if( isset( $_GET[ 'ok22' ] ) ){ ?>
+				<div class="_LK_ok">
+					<p>Запись успешно удалена</p>
+				</div>
+				<?php } ?>
+                
+                
+				<?php if( isset( $_GET[ 'ok222' ] ) ){ ?>
+				<div class="_LK_ok">
+					<p>Администратор получил Ваш запрос</p>
+				</div>
+				<?php } ?>
+				
+
+				
+				<?php if( $error ) print '<div class="_LK_error">'. $error .'</div>'; ?>
+				<form action="<?= $topage_url?>?tab=2" method="post">
+					
+					<div class="_LK_form_line _LK_form_line_br seeWarehouse1">
+						<div class="_LK_form_line grayBG">
+							<div class="thinFont">Выберите способ пополнения и введите необходимую сумму</div>
+							<div class="clr">&nbsp;</div>
+						</div>
+						<div class="clr">&nbsp;</div>
+						
+						<div class="_LK_form_line" style="height: 92px;">
+							<div class="_LK_form_lbl">Способ пополнения</div>
+							<div class="_LK_form_inp  dashedGroup">
+								<input type="radio" class="radio" value="robo" checked="checked" name="coins_type" id="coins_type1"/>
+                                <label class="labforradio" for="coins_type1">ROBOKASSA</label><div class="clr">&nbsp;</div>
+                                
+								<input type="radio" class="radio" value="schet" name="coins_type" id="coins_type2"/>
+                                <label class="labforradio" for="coins_type2">Счет на юр.лицо</label><div class="clr">&nbsp;</div>
+                                
+								<input type="radio" class="radio" value="sber"  name="coins_type" id="coins_type3"/>
+                                <label class="labforradio" for="coins_type3">Квитанция Сбербанка</label><div class="clr">&nbsp;</div>
+                                
+                                <input type="radio" class="radio" value="reqPrepay"  name="coins_type" id="coins_type4"/>
+                                <label class="labforradio" for="coins_type4">Запросить аванс</label><div class="clr">&nbsp;</div>
+                                
+							
+                            <div class="clr">&nbsp;</div>
+							</div>
+                            <div class="clr">&nbsp;</div>
+						</div>
+						<div class="clr">&nbsp;</div>
+						<div class="_LK_form_line">
+							<div class="_LK_form_lbl">Сумма</div>
+							<div class="_LK_form_inp"><input type="text" name="coins_sum" value="" placeholder="Введите сумму" required></div>
+							<div class="clr">&nbsp;</div>
+						</div>
+					</div>
+					
+			
+				
+					<div class="clr">&nbsp;</div>
+					
+					<div class="_LK_form_line _LK_form_line_butt">
+						<div class="_LK_form_lbl"> </div>
+						<div class="_LK_form_inp"><button class="mainbutton buttonsubmit" name="save_2" type="submit">Пополнить</button></div>
+						<div class="clr">&nbsp;</div>
+					</div>
+				</form>
+				
+				
+				<?php if( isset( $_GET[ 'ok2' ] ) ){ ?>
+				<div class="_LK_ok">
+					<p>Счет успешно добавлен</p>
+				</div>
+				<?php } ?>
+				
+				
+			</div>
+			
+			<?=$pageBuffer?>
+			
+			
+		</div>
+	</div>
+<!--==============================TAB2==END================================-->	
+	
+	
+	
+	
+<!--==============================TAB3=START================================-->	
+	
+<?php
+$error = false;
+
+//select summ wait output
+$sqlSummOutput = "SELECT SUM(sum) FROM  ".$modx->getFullTableName( '_points_up' )." WHERE id_user =  '".$webuserinfo['id']."' AND type = 'output'  AND status = 'wait' LIMIT 1";
+$resultSummOutput = mysql_query($sqlSummOutput) or die ('Error SUMMPrep coins history');
+$coinsSummOutputInt = mysql_fetch_row($resultSummOutput)[0];
+$coinsSummOutput = $modx->runSnippet( 'Price', array( 'price' => $coinsSummOutputInt, 'round' => 0 ) ) ;
+
+//оплаченный аванс
+$sqlSummPrepayPay = "SELECT SUM(ABS(event)) FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' AND type = 'prepaymentPAY' AND event < 0 LIMIT 1";
+$resultSummPrepayPay = mysql_query($sqlSummPrepayPay) or die ('Error в качестве аванса');
+$coinsSummPrepayPay = mysql_fetch_row($resultSummPrepayPay)[0];
+
+
+//ДЕНЬГИ ЗА ПРОДАЖИ КОТОРЫЕ НА ТЕК. МОМЕНТ В ДОСТАВКЕ
+/*
+$sqlSummNotConfirm = "SELECT SUM(event) FROM  ".$modx->getFullTableName( '_coins_history' )." AS hist
+					LEFT JOIN ".$modx->getFullTableName( '_orders' )." AS ord ON ord.sellerId = hist.id_user
+					WHERE hist.id_user =  '".$webuserinfo['id']."'   
+					AND (ord.status <>  'ended' OR hist.key = -1)
+					AND hist.shop_id >0
+					LIMIT 1";
+*/
+
+$sqlSummNotConfirm = "SELECT SUM( event ) 
+					FROM ".$modx->getFullTableName( '_coins_history' )." AS hist
+					LEFT JOIN ".$modx->getFullTableName( '_orders' )." AS ord ON ord.id = hist.shop_id
+					WHERE hist.id_user =  '".$webuserinfo['id']."'
+					AND (
+					ord.status <>  'ended'
+					OR hist.key = -1
+					)
+					AND hist.shop_id >0
+					AND hist.type =  'payUp'
+					LIMIT 1";
+
+
+
+	
+$resultNotConfirm = mysql_query($sqlSummNotConfirm) or die ('Error 634437 SUMMPrep coins history');
+$resultNotConfirmInt = mysql_fetch_row($resultNotConfirm)[0];
+//return $resultNotConfirmInt;
+
+//select summ realy many	
+$sqlSummPrivate = "SELECT SUM(event) FROM  ".$modx->getFullTableName( '_coins_history' )." WHERE id_user =  '".$webuserinfo['id']."' AND type <> 'prepayment'  LIMIT 1";
+$resultSummPrivate = mysql_query($sqlSummPrivate) or die ('Error SUMMPrep coins history');
+$coinsSummPrivateInt = mysql_fetch_row($resultSummPrivate)[0];
+$coinsSummPrivateIntWithoutOutput =								  $coinsSummPrivateInt - $resultNotConfirmInt - $coinsSummOutputInt + $coinsSummPrepayPay;
+$coinsSummPrivate = $modx->runSnippet( 'Price', array( 'price' => $coinsSummPrivateInt - $resultNotConfirmInt - $coinsSummOutputInt + $coinsSummPrepayPay, 'round' => 0 ) ) ;
+
+//return $coinsSummPrivateIntWithoutOutput.'  =	'.$coinsSummPrivateInt.' - '.$resultNotConfirmInt.' - '.$coinsSummOutputInt.' + '.$coinsSummPrepayPay;
+	
+
+if (isset($_POST['save_3'])){
+	//Ваш запрос успешно добавлен! Наш менеджер свяжется с вами для выставления счета. 
+	if (is_numeric($_POST['coinsdown_sum']) ){
+		
+		if ($_POST['coinsdown_sum'] <= $coinsSummPrivateIntWithoutOutput && $_POST['coinsdown_sum'] >0){
+			$toDBidUser = $webuserinfo['id'];
+			$toDBdate = time();
+			$toDBstatus = 'wait';
+			$toDBsum = addslashes($_POST['coinsdown_sum']);
+			$toDBtype = 'output';
+			mysql_query("INSERT INTO ".$modx->getFullTableName( '_points_up' )." (id, id_user, timest, status, sum, type ) VALUES (NULL, {$toDBidUser}, {$toDBdate}, '{$toDBstatus}', '{$toDBsum}', '{$toDBtype}')") or die ('error Insert to points' .mysql_error());
+			header( 'location: '. $topage_url.'?tab=3&ok33' );
+			exit();
+		}elseif($_POST['coinsdown_sum'] <= 0){
+			$error = 'Введите корректную сумму';
+		}else {
+			$error = 'Введенная сумма превышает доступный лимит';
+		}	
+	}else {
+		$toDBsum = 0;
+	}
+}	
+	
+	
+
+//select all history
+$sql = "SELECT * FROM  ".$modx->getFullTableName( '_points_up' )." WHERE id_user =  '".$webuserinfo['id']."' AND (status= 'wait') AND type = 'output' ORDER BY id DESC LIMIT 50";
+$result = mysql_query($sql) or die ('Error Select points up');
+
+$pageBuffer ='<div class="analogHeads">Ожидается согласование вывода денежных средств</div>';
+$pageBuffer.= '
+<div class="lkItemtitle">
+	<div class="coins_event_tit">Событие</div>
+	<div class="coins_date_tit" style="width:230px;">Дата</div>
+	<div class="coins_info_tit">Информация</div>
+	<div class="coins_dop_tit">Удалить</div>
+</div>';
+
+$fGray = 1;
+$fillGrayBG = 'fillGrayBG';
+while ($row = mysql_fetch_assoc($result)) {
+	$fGray = $fGray * -1;
+	if ($row['type'] == 'output' && $row['status'] == 'wait'){
+		$typeText = 'Ожидается вывод средств';
+	}elseif ($row['type'] == 'output' && $row['status'] == 'fail'){
+		$typeText = 'Отклонено администратором';
+	}elseif ($row['type'] == 'output' && $row['status'] == 'sellerAbort'){
+		$typeText = 'Отменено продавцом';
+	}
+	$pageBuffer.= '
+		<div class="lkItem  '.($fGray > 0 ? $fillGrayBG : '' ).' ">
+			<div class="coins_event_body tx_red">- '.$row['sum'].'</div>
+			<div class="coins_date_body" style="width: 230px;">'.date("d.m.Y H:i:s",$row['timest']).'</div>
+			<div class="coins_info_body">'.$typeText.'</div>
+			<div class="coins_dop_body"><a href="'.$topage_url.'?tab=3&deleteIDout='.$row['id'].'"><img src="/template/images/deleteicon.png" /></a></div>
+		</div>
+	';
+}	
+
+
+?>
+		<div class="vkldk_div vkldk_div_3 <?= ( $vkladka_active == 3 ? 'active' : '' ) ?>">
+		<div class="_LK_wrapper _LK_wrapper_big">	
+			<div class="_LK_form">	
+				
+				<?php if( isset( $_GET[ 'ok3' ] ) ){ ?>
+				<div class="_LK_ok">
+					<p>Запись успешно удалена</p>
+				</div>
+				<?php } ?>
+				
+				<?php if( isset( $_GET[ 'ok33' ] ) ){ ?>
+				<div class="_LK_ok">
+					<p>Запись успешно добавлена</p>
+				</div>
+				<?php } ?>
+				
+				<?php if( $error ) print '<div class="_LK_error">'. $error .'</div>'; ?>
+				<form action="<?= $topage_url?>?tab=3" method="post">
+					
+					<div class="_LK_form_line _LK_form_line_br seeWarehouse1">
+						<div class="_LK_form_line grayBG">
+							<div class="thinFont">Заявка на вывод денежных средств</div>
+							<div class="clr">&nbsp;</div>
+						</div>
+
+						<div class="clr">&nbsp;</div>
+						<div class="_LK_form_line">
+							<div class="_LK_form_lbl">Сумма</div>
+							<div class="_LK_form_inp"><input type="text" name="coinsdown_sum" value="" placeholder="Введите сумму" required><div class="notice_px">Для вывода доступно : <span><?=$coinsSummPrivate?> <span class="rubl">a</span></span></div></div>
+					
+							
+							<div class="clr">&nbsp;</div>
+						</div>
+						
+						<div class="clr">&nbsp;</div>
+						<div class="_LK_form_line">
+							<div class="_LK_form_lbl">Комментарий</div>
+							<div class="_LK_form_inp"><textarea name="coinsdown_comment"></textarea></div>
+							<div class="clr">&nbsp;</div>
+						</div>
+						
+					</div>
+					
+			
+				
+					<div class="clr">&nbsp;</div>
+					
+					<div class="_LK_form_line _LK_form_line_butt">
+						<div class="_LK_form_lbl"> </div>
+						<div class="_LK_form_inp"><button class="mainbutton buttonsubmit" name="save_3" type="submit">Отправить</button></div>
+						<div class="clr">&nbsp;</div>
+					</div>
+				</form>
+			</div>
+			
+			<?=$pageBuffer?>
+			
+			
+		</div>
+	</div>
+<!--==============================TAB3==END================================-->	
+	
+</div>
+
+
+
+
+
+?>

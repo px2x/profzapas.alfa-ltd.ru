@@ -1,0 +1,59 @@
+<?php
+
+//v05
+//==================================================================================
+$lk= 106;
+$reg= 107;
+$auth= 108;
+$restorepassword= 109;
+$agreed= 110;
+$DMTCaptcha= 111;
+$DMTCaptcha_img= 112;
+//==================================================================================
+
+if(! $_SESSION[ 'webuserinfo' ][ 'auth' ] )
+{
+	header( 'location: '. $modx->makeUrl( $lk ) );
+	exit();
+}
+
+
+$webuserinfo= $_SESSION[ 'webuserinfo' ][ 'info' ];
+$sellerDescrInfo= $_SESSION[ 'webuserinfo' ][ 'seller_descr' ];
+$sellerWarehouses= $_SESSION[ 'webuserinfo' ][ 'seller_warehouses' ];
+$userContactFaces= $_SESSION[ 'webuserinfo' ][ 'contact_faces' ];
+
+
+include_once( MODX_MANAGER_PATH .'includes/controls/PHPExcel.php' );
+include_once( MODX_MANAGER_PATH .'includes/controls/PHPExcel/IOFactory.php' );
+
+ 
+
+$objPHPExcel = PHPExcel_IOFactory::load("template.xls");
+ 
+
+$objPHPExcel->setActiveSheetIndex(0);
+$active_sheet = $objPHPExcel->getActiveSheet();
+ 
+$cellOfset = 2;
+
+
+
+
+
+
+
+
+
+header("Content-Type:application/vnd.ms-excel");
+header("Content-Disposition:attachment;filename='Profzapas_Blank_Template.xls'");
+$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+$objWriter->save('php://output');
+
+exit();
+
+
+
+
+
+?>

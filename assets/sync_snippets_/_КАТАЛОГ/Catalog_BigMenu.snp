@@ -1,0 +1,18 @@
+<?php
+
+$koren= 8;
+
+$docs= $modx->runSnippet( 'GetDoc6', array( 'ids'=>$koren, 'type'=>'childs', 'depth'=>'1', 'fields'=>'pagetitle', 'tvfileds'=>'image', 'isf'=>'all' ) );
+if( $docs )
+{
+	$ii= 0;
+	foreach( $docs AS $row )
+	{
+		$ii++;
+		$print .= $modx->runSnippet( 'CAT_ITEM', array( 'type' => 'category_1', 'row' => $row, 'last' => ( $ii % 3 == 0 ? true : false ) ) );
+	}
+}
+
+return $print;
+
+?>

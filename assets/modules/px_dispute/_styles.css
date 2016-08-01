@@ -1,0 +1,603 @@
+
+
+*{
+box-sizing: inherit;
+margin:0;
+padding:0;
+} 
+
+.modul_scorn_all {
+	padding: 10px 15px 10px 15px;
+	=background: #f4f4f4 url( '_images/fon_main_1.png' ) left top repeat;
+	color: #333;
+	font: normal 14px arial, verdana, tahoma, helvetica, sans-serif;
+}
+.modul_scorn_all h1 {
+	margin: 0px 0px 20px 0px;
+	font-size: 20px;
+	border-bottom: 1px solid #ddd;
+}
+
+
+.modul_scorn_all form {
+	margin: 0px;
+}
+
+
+
+.clr {
+	clear: both;
+	font-size: 0px;
+	line-height: 0px;
+}
+
+
+
+.newUnreadMsg {
+    background-color: #598bcd;
+    border-radius: 4px;
+    height: 22px;
+    margin-right: 20px;
+    margin-top: 10px;
+    line-height: 22px;
+    padding: 0 10px;
+    color: #fff; 
+    
+}
+
+
+
+.topmenu {
+	background: #000 url( '/manager/media/style/MODxRE/images/misc/headers.jpg' ) left bottom no-repeat;
+	padding: 10px 0px 9px 20px;
+	margin: 0px 0px 20px 0px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+	.topmenu ul {
+		color: #dae4e5;
+		text-decoration: none;
+		padding: 0px;
+		margin: 0px;
+		list-style: none;
+	}
+		.topmenu ul li {
+			padding: 0px;
+			margin: 0px;
+			float: left;
+			border-right: 1px solid #849a9a;
+		}
+			.topmenu ul li a {
+				color: #dae4e5;
+				padding: 2px 15px 1px 15px;
+				display: block;
+				text-decoration: none;
+				font-size: 14px;
+				letter-spacing: 1px;
+				text-transform: uppercase;
+			}
+				.topmenu ul li a:hover {
+					background: rgba( 255,255,255, 0.3 );
+					color: #fff;
+				}
+
+
+
+.link {
+	text-decoration: none;
+	color: #000;
+	border-bottom: 1px solid rgba( 0,0,0, 0.2 );
+}
+		.link:hover {
+			color: #e54848;
+			border-bottom: 1px solid #e54848;
+		}
+
+
+
+
+
+.wuser_item {
+	float: left;
+	width: 215px;
+	height: 160px;
+	padding: 10px;
+	margin: 0px 10px 10px 0px;
+	border: 2px solid #eee;
+}
+	.wuser_item .wusi_fio {
+		text-align: center;
+		font-size: 16px;
+		padding: 0px 0px 10px 0px;
+	}
+		.wuser_item .wusi_fio a {
+			font-weight: bold;
+		}
+	.wuser_item .wusi_email {
+		text-align: center;
+		padding: 0px 0px 20px 0px;
+	}
+	.wuser_item .wusi_phone {
+		text-align: center;
+		padding: 0px 0px 10px 0px;
+	}
+	.wuser_item .wusi_ordcc {
+		text-align: center;
+		padding: 0px 0px 10px 0px;
+	}
+	.wuser_item .wusi_score {
+		text-align: center;
+		padding: 0px 0px 15px 0px;
+	}
+	.wuser_item .wusi_dtreg {
+		text-align: center;
+		color: #777;
+		font-size: 10px;
+	}
+
+
+
+
+.lkItem {
+    width: 1010px;
+    height: 50px;
+    border-bottom: 1px solid #e5e5e5;
+    transition-property: all;
+    transition-duration: 0.4s;
+    transition-timing-function: ease;
+    transition-delay: 0.0s;
+}	
+	
+
+.lkItem_tit {
+	height: 50px;
+    line-height: 50px;
+    font-weight: 100;
+    border-bottom: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.lkItem_tit > div {
+	float:left;
+}
+
+.lkItem_tit .order_number_tit ,.lkItem .order_number   {
+	width: 90px;
+    padding-left: 10px;
+}
+
+.lkItem_tit .date_w_tit ,.lkItem .date_w {
+	width:150px;
+}
+
+.lkItem .date_w {
+	margin-left: 4px;
+}
+
+
+.lkItem_tit .summOneOrder_tit  ,.lkItem .summOneOrder {
+	width:120px;
+}
+.lkItem_tit .status_tit , .lkItem .status  {
+	width:140px;
+}
+.lkItem_tit .action_tit  {
+	width:50px;
+}
+
+
+.lkItem .more  {
+    float: right;
+    width: 26px;
+    background: url('_images/expand_down.png') no-repeat;
+}
+
+.lkItem .action > * {
+	display:block;
+	float:left;
+}
+
+.lkItem .action form {
+	margin-top:10px;
+}
+
+.lkItem .action form input {
+	=width:80px;
+}
+
+
+.seemoreinfoDispute .seePopupMSGDispute  {
+	border: none;
+    display: block;
+    margin-right: 5px;
+    float: left;
+    margin-top: 9px;
+    line-height: 15px;
+    padding: 3px 10px 3px;
+    text-align: center;
+    font-size: 10px;
+    cursor: pointer;
+    background: #C5C5C5;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 4px solid #A2A2A2;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    text-decoration: none;
+    transition-property: all;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+    transition-delay: 0.0s;
+}
+
+.seemoreinfoDispute .seePopupMSGDispute:hover {
+	background: #FFA500;
+	border-bottom: 4px solid #EC7800;
+}
+
+.lkItem .action a.blueButton:hover {
+	background: #00ACED;
+	border-bottom: 4px solid #0594CA;
+}
+
+.lkItem .action a.greenButton:hover {
+	background: #4BCC66;
+	border-bottom: 4px solid #37A24D;
+}
+
+
+.lkItem .action a.redButton:hover {
+	background: #e02b2b;
+	border-bottom: 4px solid #B50000;
+}
+
+
+
+.itemOrderList a {
+	font-size:12px;
+}
+
+
+
+.seeMoreInfo .left .itemOrderList_tit {
+	height: 30px;
+    background: #e0e0e0;
+}
+
+.seeMoreInfo .left .itemOrderList_tit div {
+	float:left;
+	padding: 0 5px;
+    box-sizing: content-box;
+}
+
+
+
+.lkItem > div {
+    float: left;
+    font-weight: 100;
+    height: 50px;
+    padding: 5px;
+    line-height: 40px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.clr {
+    clear: both;
+    font-size: 0px;
+    line-height: 0px;
+}
+
+
+
+.lkItem .seeMoreInfo {
+    transition-property: all;
+    transition-duration: 0.4s;
+    transition-timing-function: ease;
+    transition-delay: 0.0s;
+    float: none;
+    width: 1010px;
+    padding: 0 !important;
+    overflow: hidden;
+    line-height: 28px;
+}
+
+
+.lkItem .seeMoreInfo >.left {
+    float: left;
+    width: 687px;
+}
+
+
+.lkItem .seeMoreInfo >.right {
+    float: right;
+    width: 320px;
+    height: 300px;
+    border-left: 1px dashed #ccc;
+}
+
+.action > a {
+	height: 20px;
+    line-height: normal;
+}
+
+.lkItem .seeMoreInfo >.right > div >span {
+    font-weight: 500;
+    color: #555;
+}
+
+
+.lkItem .seeMoreInfo >.right > div {
+    margin-left: 10px;
+}
+
+.seeMoreInfo .left .itemOrderList_tit .seeMoreInfo_code {
+	width:50px;
+}
+
+.seeMoreInfo .left .itemOrderList_tit .seeMoreInfo_name {
+	width:140px;
+}
+
+
+.seeMoreInfo .left .itemOrderList_tit .seeMoreInfo_price {
+	width:80px;
+}
+
+
+.seeMoreInfo .left .itemOrderList_tit .seeMoreInfo_count {
+	width:50px;
+}
+
+
+.seeMoreInfo .left .itemOrderList_tit .seeMoreInfo_summ {
+	width: 120px;
+    text-align: center;
+}
+
+
+
+.itemOrderList {
+	width: 690px;
+    height: 25px;
+}
+
+
+.seeMoreInfo .left .itemOrderList a, .seeMoreInfo .left .itemOrderList span{
+	display: block;
+    float: left;
+    height: 25px;
+    line-height: 25px;
+}
+
+
+
+.seeMoreInfo .left .itemOrderList span .rubl {
+}
+
+
+.seeMoreInfo .left .itemOrderList a {
+	width:60px;
+	margin-left:5px;
+}
+
+
+.seeMoreInfo .left .itemOrderList span.title  {
+	width: 150px;
+}
+
+
+.seeMoreInfo .left .itemOrderList span.price  {
+	width: 90px;
+}
+
+
+.seeMoreInfo .left .itemOrderList span.count  {
+	width: 100px;
+}
+
+
+.seeMoreInfo .left .itemOrderList span.summOnePosition  {
+	width: 85px;
+}
+
+.seeMoreInfo .left .itemOrderList span.selectWH  {
+	width: 200px;
+}
+
+
+.seeMoreInfo .left .itemOrderList span.selectWH select   {
+	    width: 195px;
+    height: 18px;
+    margin-top: 3px;
+    border: 1px solid #e5e5e5;
+    color: #555;
+}
+
+
+
+
+
+
+ 
+
+
+.redButton{
+    
+    line-height: normal;
+    margin-left: 50px !important;
+    
+}
+
+
+.redButton:hover{
+    
+    background: #e02b2b !important;
+    border-bottom: 4px solid #B50000 !important;
+    
+}
+
+
+.Closeddispute{
+    text-align: center;
+    font-size: 24px;
+}
+
+/*SmallMessages*/
+
+.dsrkBG{
+    display: none;
+    position: absolute;
+    background-color: rgba(10,10,20,.8);
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    
+}
+
+.messagesSmall {
+    float: left;
+    /* width: 490px; */
+    /* height: 391px; */
+    /* border: 1px solid #eee; */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -230px;
+    margin-left: -350px;
+    width: 700px;
+    height: 440px;
+    background: linear-gradient(to top left, #eee 0%, #ffffff 100%);
+    border-top: 12px solid #7390c7;
+    box-shadow: 0 1px 50px rgba(10,10,10,.7);
+    
+    
+}
+
+.writersInfo {
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #e0e0e0;
+    height: 30px;
+}
+
+
+	
+	.messagesSmall .writersInfo .writerMe  , .messagesSmall  .writersInfo .writerFrom{
+		width: 200px;
+		text-align: center;
+		font-size: 12px;
+		height: 30px;
+		line-height: 30px;
+	}
+	
+
+.messagesSmall .writersInfo .writerMe  {
+    
+    float: right;
+}   
+	
+
+.messagesSmall  .writersInfo .writerFrom{
+    
+    float: left;
+}
+	.messagesSmall .msgContent {
+		width: 100%;
+		height: 300px;
+		border-bottom: 1px solid #eee;
+		overflow-y: scroll;
+	}
+	
+	
+	.messagesSmall .msgContent .msgMe, .messagesSmall .msgContent .msgNotMe {
+		background-color: #D1FFDB;
+        float: right;
+        margin: 10px;
+        max-width: 200px;
+        min-width: 100px;
+        padding: 10px;
+        border-radius: 20px;
+        line-height: normal;
+	}
+	
+
+	.messagesSmall .msgContent .msgNotMe {
+		float:left;
+		background-color: #DBE0F3;
+	}
+	
+	.messagesSmall .msgContent .msgMe.msgUnread {
+		background-color: #97FFAD;
+	}
+	
+	.messagesSmall .msgContent .msgNotMe.msgUnread {
+		background-color: #C9D1F1;
+	}
+	
+	
+	.messagesSmall .msgContent .msgMe span, .messagesSmall .msgContent .msgNotMe span {
+		display: block;
+		text-align: center;
+		width: 100%;
+		font-size: 9px;
+		margin-top: 10px;
+
+	}
+	
+	
+	
+	
+	
+
+	.messagesSmall .sendForm {
+		height: 50px;
+		background-color: #f9f9f9;
+	}
+	
+	.messagesSmall .sendForm form textarea {
+		padding: 3px;
+		resize: none;
+		display: block;
+		border: none;
+		background-color: #fff;
+		height: 50px; 
+		float: left;
+		width: 330px;
+        margin-left: 10px;
+	}
+	
+	.messagesSmall .sendForm form .sendMessageButton {
+		border: none;
+		display: block;
+		margin-right: 3px;
+		float: left;
+		margin-top: 8px;
+		margin-left: 20px;
+		padding: 10px 15px 7px;
+		text-align: center;
+		font-size: 12px;
+		cursor: pointer;
+		background: #C5C5C5;
+		color: #fff;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		border-bottom: 4px solid #A2A2A2;
+		border-radius: 4px;
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
+		text-decoration: none;
+		transition-property: all;
+		transition-duration: 0.2s;
+		transition-timing-function: ease;
+		transition-delay: 0.0s;
+	}
+	
+	.messagesSmall .sendForm form .sendMessageButton:hover {
+		 background: #00ACED;
+		border-bottom: 4px solid #0594CA;
+	}
+	
