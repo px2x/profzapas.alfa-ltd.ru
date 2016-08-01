@@ -141,7 +141,7 @@ if ($coinsHash==$hash) {
 	$coinsSummPrivate = mysql_fetch_row($resultSummPrivate)[0] - $coinsSummOutputInt +$coinsSummPrepayPay;
 	*/
 	$coinsSummPrivate = $coinsSumm -  $resultNotConfirmInt  - $coinsSummPrepay + $coinsSummPrepayPay;
-	
+	 
 
 	
 
